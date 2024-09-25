@@ -12,6 +12,7 @@ setup(
             "PlotImputedHvcf = PHGv2Tools.Modules.PlotImputedHvcf:PlotHvcf",
             "PlotPangenomeChromosomesRegions = PHGv2Tools.Modules.PlotPangenomeChromosomesRegions:PlotPangenomesChromosomesRegions",
             "RangePangenomeEvolution = PHGv2Tools.Modules.RangePangenomeEvolution:RangePangenomeEvolution",
+            "CondaSetup = bin.CondaSetup.sh",             
         ],
     },
     author='Joan Sarria',
