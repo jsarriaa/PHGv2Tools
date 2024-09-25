@@ -257,5 +257,6 @@ chr3H_LR890098.1	78ffc528bd70012d1f75067ecbd7f4e8	START=613549767	END=613553517
     temp_folder = f"{hvcf_folder}/temp"
     shutil.rmtree(temp_folder)
 
+if __name__ == '__RangePangenomeEvolution__':
 
-RangePangenomeEvolution()
+    RangePangenomeEvolution()

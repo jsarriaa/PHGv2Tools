@@ -6,7 +6,12 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            # Define command-line scripts here if needed
+            "CheckImputatedHaplotype = PHGv2Tools.Modules.CheckImputatedHaplotype:CheckImputatedHaplotype",
+            "CheckHaplotypeAlelles = PHGv2Tools.Modules.CheckHaplotypeAlelles:CheckHaplotypeAlleles",
+            "CoreRangeDetecter = PHGv2Tools.Modules.CoreRangeDetecter:PangenomeHVCFAnalizer",
+            "PlotImputedHvcf = PHGv2Tools.Modules.PlotImputedHvcf:PlotHvcf",
+            "PlotPangenomeChromosomesRegions = PHGv2Tools.Modules.PlotPangenomeChromosomesRegions:PlotPangenomesChromosomesRegions",
+            "RangePangenomeEvolution = PHGv2Tools.Modules.RangePangenomeEvolution:RangePangenomeEvolution",
         ],
     },
     author='Joan Sarria',
