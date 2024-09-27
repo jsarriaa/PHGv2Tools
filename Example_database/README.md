@@ -40,9 +40,10 @@ phg_v2_example/
 │   └── LineC.fastq
 └── output
 │    └── vcf_files
-└── gvcf_dataset
-└── hvcf_dataset
-└── temp
+└── vcf_dbs
+    └── gvcf_dataset
+    └── hvcf_dataset
+    └── temp
 ```
 Then, prepare the ranges reference file, align and compress the genomes to include at the database. Follow PHG commands
 ```
@@ -60,8 +61,6 @@ phg_v2_example/
 │   │   ├── LineB.fa
 │   │   └── LineC.fa
 │   ├── anchors.gff
-│   ├── ref_ranges.bed
-│   ├── assemblies.agc
 │   └── LineC.fastq
 └── output
 │   │   └── vcf_files
@@ -92,12 +91,137 @@ phg_v2_example/
 │   ├── proali_LineC_outputAndError.log *
 │   ├── ref.cds.fasta *
 │   └── Ref.sam *
-└── gvcf_dataset
-└── hvcf_dataset
-└── temp
+└── vcf_dbs
+    ├── assemblies.agc*
+    ├── gvcf_dataset/
+    ├── hvcf_dataset/
+    ├── reference *
+    │   ├── Ref.bed *
+    │   └── Ref.fa *
+    └── temp/
 ```
 Then, proceed creating the VCF files
 ```
 ./phg create-ref-vcf --bed /my/bed/file.bed --reference-file data/updated_assemblies/Ref.fa --reference-url https://url-for-ref --reference-name B73 --db-path /path/to/tiled/dataset folder
 ./phg create-maf-vcf --db-path /path/to/dbs --bed /my/bed/file.bed --reference-file data/updated_assemblies/Ref.fa --maf-dir /my/maf/files -o /path/to/vcfs
 ```
+New files are generated.
+```
+phg_v2_example/
+├── data
+│   └── prepared_genomes
+│   │   ├── Ref-v5.fa
+│   │   ├── LineA.fa
+│   │   ├── LineB.fa
+│   │   └── LineC.fa
+│   ├── anchors.gff
+│   └── LineC.fastq
+└── output
+│   │   └── vcf_files
+│   │       ├── LineA.h.vcf.gz *
+│   │       ├── LineA.h.vcf.gz.csi *
+│   │       ├── LineA.g.vcf.gz *
+│   │       ├── LineA.g.vcf.gz.csi *
+│   │       ├── LineB.h.vcf.gz *
+│   │       ├── LineB.h.vcf.gz.csi *
+│   │       ├── LineB.g.vcf.gz *
+│   │       ├── LineB.g.vcf.gz.csi *
+│   │       ├── LineC.h.vcf.gz *
+│   │       ├── LineC.h.vcf.gz.csi *
+│   │       ├── LineC.g.vcf.gz *
+│   │       ├── LineC.g.vcf.gz.csi 
+│   │       └── VCFMetrics.tsv *
+│   ├── anchorwave_gff2seq_error.log 
+│   ├── anchorwave_gff2seq_output.log 
+│   ├── LineA.maf 
+│   ├── LineA.sam 
+.   .
+.   .
+.   .
+│   └── Ref.sam 
+└── vcf_dbs
+    ├── assemblies.agc
+    ├── gvcf_dataset/
+    ├── hvcf_dataset/
+    ├── hvcf_files *
+    │   ├── Ref.h.vcf.gz *
+    │   └── Ref.h.vcf.gz.csi *
+    ├── reference 
+    │   ├── Ref.bed 
+    │   └── Ref.fa 
+    └── temp/
+```
+Then, building the kmer index and prepare for the imputation of the test fastq file
+```
+./phg build-kmer-index --db-path /my/db/uri --hvcf-dir /my/hvcf/dir
+./phg map-kmers --hvcf-dir /my/hvcf/dir --kmer-index /my/hvcf/dir/kmerIndex.txt --key-file /my/path/keyfile --output-dir /my/mapping/dir
+./phg find-paths --path-keyfile /my/path/keyfile --hvcf-dir /my/hvcf/dir --reference-genome /my/ref/genome --path-type haploid --output-dir /my/imputed/hvcfs
+```
+After imputation, the new LineD.h.vcf represents the imputed haplotype.
+```
+phg_v2_example/
+├── data
+│   └── prepared_genomes
+│   │   ├── Ref-v5.fa
+│   │   ├── LineA.fa
+│   │   ├── LineB.fa
+│   │   └── LineC.fa
+│   ├── anchors.gff
+│   └── LineC.fastq
+└── output
+│   │   └── vcf_files
+│   │       ├── LineA.h.vcf.gz 
+│   │       ├── LineB.h.vcf.gz 
+│   │       ├── LineC.h.vcf.gz 
+│   │       .
+│   │       .
+│   │       ├── kmerIndex.txt *
+│   │       ├── kmerIndexStatistics.txt *
+│   │       ├── LineD_readMapping.txt *
+│   │       ├── LineD_imputed.h.vcf *
+│   │       └── VCFMetrics.tsv 
+│   ├── anchorwave_gff2seq_error.log 
+│   ├── anchorwave_gff2seq_output.log 
+│   ├── LineA.maf 
+│   ├── LineA.sam 
+.   .
+.   .
+.   .
+│   └── Ref.sam 
+└── vcf_dbs
+    ├── assemblies.agc
+    ├── gvcf_dataset/
+    ├── hvcf_dataset/
+    ├── hvcf_files *
+    │   ├── Ref.h.vcf.gz *
+    │   └── Ref.h.vcf.gz.csi *
+    ├── reference 
+    │   ├── Ref.bed 
+    │   └── Ref.fa 
+    └── temp/
+```
+Last step, to merge all hvcfs of Pangenome (LineA, LineB, LineC) in a single file using:
+```
+phg merge-hvcfs --input-dir my/hvcf/directory --output-file output/merged_hvcfs.h.vcf --id-format CHECKSUM --reference-file --range-bedfile
+```
+
+This is then the files to have in mind for phgtools analysis:
+
+```
+├── data
+│   └── prepared_genomes
+└── output
+│   │   └── vcf_files
+│   │       ├── LineA.h.vcf.gz ***
+│   │       ├── LineB.h.vcf.gz ***
+│   │       ├── LineC.h.vcf.gz ***
+│   │       ├── LineD_imputed.h.vcf ***
+│   │       └── MergedLinesA_B_C.h.vcf ***
+└── vcf_dbs
+    └── hvcf_files 
+            └──── Ref.h.vcf.gz ***
+
+```
+
+WorkInProgress:
+Here describe each of the 6 functions with these files
