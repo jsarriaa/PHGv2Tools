@@ -6,7 +6,6 @@ Package to downstream analysis of pangenomes databases, working with Practical H
 - [Installation](#installation)
 - [Usage](#usage)
 - [References](#references)
-- [License](#license)
 
 ## Introduction
 Repository writen in python to perform downstream analisys of [Practical Haplotype Graph](https://phg.maizegenetics.net/). It is prepared to either work in command line to analyse the pangenome database, but also [notebooks](#notebooks) are available to be used and modified if needed by any user. 
@@ -15,17 +14,17 @@ It mainly works with [h.VCF](https://phg.maizegenetics.net/hvcf_specifications/)
 It basically works with two outputs of PHG:
 
 #### Pangenome haplotypes VCFs
-With the function [Create VCF files](#https://phg.maizegenetics.net/build_and_load/#create-vcf-files) of PHG a graph formed by nodes and ranges is performed for each of the genomes. It is usefull to  [merge the VCFs](https://github.com/maize-genetics/phg_v2/blob/main/src/main/kotlin/net/maizegenetics/phgv2/cli/MergeHvcfs.kt) to do analysis of the graph as a whole. 
+The pangenome graph is build from the reference genome. Ranges based in annotated genes are described, stablishing by starting and ending nodes, fisic coordinates at a chromosome. Alligning new genomes against it determines the presence/absence of each range at this genome. Then, it is posible to add to the pangenome, retaining also this new haplotype for the range, enriching the variability for it. With the function [Create VCF files](#https://phg.maizegenetics.net/build_and_load/#create-vcf-files) of PHG an haplotype file for each genome is obtained, as an h.VCF. It is usefull to  [merge the VCFs](https://github.com/maize-genetics/phg_v2/blob/main/src/main/kotlin/net/maizegenetics/phgv2/cli/MergeHvcfs.kt) to do analysis of the graph as a whole. 
 Functions supported now:
 - [Core, accesion and unique ranges analisys](#Core-accesion-and-unique-ranges-analisys)
 - [Pangenome ranges evolution](#Pangenome-ranges-evolution)
-- [Plot pangenome regions/chromosomes]
-- [Check haplotypes for a region]
+- [Plot pangenome regions/chromosomes](#Plot-pangenome-regions/chromosomes)
+- [Check haplotypes for a region](#Check-haplotypes-for-a-region)
 
 #### Imputed haplotypes VCFs
 [Imputation](https://phg.maizegenetics.net/imputation/) is a powerfull tool from PHG to achieve complete genomes even from low density sequence  or variant data. What is obtained after alligning kmers and getting the graph of the haplotype is a h.VCF file, which some data can be mined from it:
-- [Check identity against pangenome]
-- [Plot imputed genome]
+- [Check identity against pangenome](#Check-identity-against-pangenome)
+- [Plot imputed genome](#Plot-imputed-genome)
 
 
 ## Installation
@@ -62,7 +61,16 @@ Ensure to have installated PHGv2. Follow the steps [here](https://phg.maizegenet
 
 ## Usage
 - #### Core, accesion and unique ranges analisys
+Having a merged h.VCF file of the pangenome PHG database, it is possible to determine which ranges are found in all, only one or in certain genomes of the pangenome. As PHG ranges are based in genes annotation, it is possible to perform a parallelism between them. It is stapled for pangenome data analysis to think about core, accessory and unique genes:
+![Pangenome genes example. [reference](https://www.bgi.com/us/plant-and-animal-pan-genome)](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/Figure%201.%20Example%20of%20a%20pan-genome.jpg)
+[img reference](https://www.bgi.com/us/plant-and-animal-pan-genome)
+Extrapolating this into the PHG ranges, it is usefull to have the information of which ranges are shared or not.
+
 - #### Pangenome ranges evolution
+- #### Plot pangenome regions/chromosomes
+- #### Check haplotypes for a region
+- #### Check identity against pangenome
+- #### Plot imputed genome
 
 
 
