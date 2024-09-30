@@ -62,12 +62,51 @@ Ensure to have installated PHGv2. Follow the steps [here](https://phg.maizegenet
 ## Usage
 - #### Core, accesion and unique ranges analisys
 Having a merged h.VCF file of the pangenome PHG database, it is possible to determine which ranges are found in all, only one or in certain genomes of the pangenome. As PHG ranges are based in genes annotation, it is possible to perform a parallelism between them. It is stapled for pangenome data analysis to think about core, accessory and unique genes:
+
 ![Pangenome genes example. [reference](https://www.bgi.com/us/plant-and-animal-pan-genome)](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/Figure%201.%20Example%20of%20a%20pan-genome.jpg)
+
 [img reference](https://www.bgi.com/us/plant-and-animal-pan-genome)
 Extrapolating this into the PHG ranges, it is usefull to have the information of which ranges are shared or not.
 
+```core-range-detecter``` is the function which will give as output 2 png images:
+  - bar plot of ranges distributed in how many genomes are found at pangenome.
+  - sector diagram plotting the % of core, accessory and unique haplotypes.
+  It takes as arguments:
+```
+  --help
+  --pangenome-hvcf // -hvcf  <Merged of all hvcf of the pangenome database>
+```
+![image_1_hvcf_plot](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/merged_hvcfs_19092024.h.vcf_1.png)
+![image_2_hvcf_plot](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/merged_hvcfs_19092024.h.vcf_2.png)
+
 - #### Pangenome ranges evolution
+
+A pangenome store all variability from species that a single reference genome can not. However, as long as increasing the ammount of varieties included in a pangenome the growing slope breaks exponentially, showing a collapsed top. To plot how does this ranges storage in each species pangenome is usefull in order to optimize the ammount of data stored.
+
+``` range-pangenome-evolution``` is the function stacking one by one the haplotype files and plotting the number of ranges. Taking as arguments:
+
+```
+--hvcf-folder // -hf <Folder path to the h.vcf files of the pangenome database>  #Built with phg create-maf-vcf
+--reference-file // -ref <Reference.fasta>  #Built with phg prepare-assemblies
+--range-bedfile // <reference_ranges.bed>   #Built with phg create-ranges
+```
+![range_evolution](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/range_evolution.png)
+
+  
 - #### Plot pangenome regions/chromosomes
+Function to plot a region of a chromosome (or the whole chr) of the pangenome.
+If not region is specified, it will be plotted the entire chromosome. The function is ```plot-pangenome-chromosomes``` and its agruments are:
+```
+--hvcf-folder // -hvcf <Folder path to the h.vcf files of the pangenome database>  #Built with phg create-maf-vcf
+--reference-hvcf // -ref <Reference.h.vcf>  #Built with phg create-ref-vcf
+--chromosome // -chr <chrX> i.e. [chr1], [chr22]
+--reference-fasta // -fa <Reference.fasta>  #Built with phg prepare-assemblies
+--region // -reg <START-END> i.e. [10000-20000]   #If not added, whole chr is plotted
+```
+![FULL_chr_plot](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/pangenome_FULL_chr5.png)
+![Region_to_plot](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/pangenome_chr7_575000-745000.png)
+
+
 - #### Check haplotypes for a region
 - #### Check identity against pangenome
 - #### Plot imputed genome
