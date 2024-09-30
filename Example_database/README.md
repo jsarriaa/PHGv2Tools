@@ -4,12 +4,12 @@ It actually takes:
 - Ref.fa
 - anchors.gff
 
-*** Ensure to have the proper phgtools conda and intalled the phg software
+*** Ensure to have the proper phgtools conda and installed the phg software
 
 It will give a 3 genomes pangenome using a reference genome and its gene annotation.
 There is also a raw fastq (doomie) imitating a low density sequence.
 
-This is the initial matherial to start the pangenome:
+This is the initial material to start the pangenome:
 ```
 phg_v2_example/
 ├── data
@@ -229,16 +229,62 @@ This is then the files to have in mind for phgtools analysis:
 range-pangenome-evolution --hvcf-folder /Example_database/output/vcf_files/ --reference-file Ref.fa --range-bedfile output/ref_ranges.bed
 ```
 The testing files are small, and new ranges are not included after including new genomes
-[RangesAmplificationSlope](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/RangesAmplificationSlope.png)
+![RangesAmplificationSlope](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/RangesAmplificationSlope.png)
 
 
-#### Core, accesory and unique ranges
+#### Core, accessory and unique ranges
 ```
 core-range-detecter --pangenome-hvcf output/MergedLinesA_B_C.h.vcf
 ```
 These pangenome has either ranges in all haplotypes or only in one, as shown in plots:
 
-[MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_2.png)
-[MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_1.png)
+![MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_2.png)
+![MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_1.png)
+
+#### Plot pangenome region/chromosomes
+If not region is specified, whole chromosome will be plotted
+```
+plot-pangenome-chromosomes --hvcf-folder output/vcf_files/ --reference-hvcf output/Ref.h.vcf.gz --chromosome chr1 --reference-fasta Ref.fa 
+```
+![chr1_FULL](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/pangenome_FULL_chr1.png)
+On the other hand:
+```
+plot-pangenome-chromosomes --hvcf-folder output/vcf_files/ --reference-hvcf output/Ref.h.vcf.gz --chromosome chr2 --region 15000-35000 --reference-fasta Ref.fa 
+```
+![chr2_15000-35000](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/pangenome_chr2_15000-35000.png)
+
+#### Check haplotypes for a region
+```
+check-haplotype-alleles --hvcf output/MergedLinesA_B_C.h.vcf --reference-fasta Ref.fa --start 18800 --end 20100 --chromosome 2
+```
+It will give as output a list of the ranges existing inside your coordinates, or in which range is contained:
+```
+there are 2 keys of ranges containing the coordinates:
+['3efc16790e55a2a8334c939d0795dfde', '6727268d7ef78af2591fe7be98470895']
 
 
+Line: LineA     Region: 2:17607-21500   Reference range:2:18001-21500> 
+Line: LineB     Region: 2:18001-21500   Reference range:2:18001-21500>
+```
+
+#### Check Identity against pangenome
+```
+check-imputated-haplotype --hvcf-folder output/ --hvcf-file output/LineD.h.vcf
+```
+It gives all matches with pangenome haplotypes against the imputed one:
+```
+Total ranges in output/LineD.h.vcf is 38
+Checking <_io.TextIOWrapper name='output/LineB.h.vcf.gz' encoding='UTF-8'>
+Match count for output/LineB.h.vcf.gz is 0 out of 38 ranges(0.0%)
+Checking <_io.TextIOWrapper name='output/LineA.h.vcf.gz' encoding='UTF-8'>
+Match count for output/LineA.h.vcf.gz is 38 out of 38 ranges(100.0%)
+Checking <_io.TextIOWrapper name='output/LineC.h.vcf.gz' encoding='UTF-8'>
+Match count for output/LineC.h.vcf.gz is 21 out of 38 ranges(55.26%)
+```
+
+#### Plot imputed genome
+```
+plot-imputed-hvcf --input-hvcf output/LineD.h.vcf --pangenome-hvcf-folder output/ --reference-hvcf hvcf_files/Ref.h.vcf.gz
+```
+It will plot the imputed h.vcf file:
+![LineD_hvcf_plot](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/LineD.h.vcf.png)
