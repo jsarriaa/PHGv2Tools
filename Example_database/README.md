@@ -222,6 +222,23 @@ This is then the files to have in mind for phgtools analysis:
             └──── Ref.h.vcf.gz ***
 
 ```
+## PHG tools utilities:
 
-WorkInProgress:
-Here describe each of the 6 functions with these files
+#### Pangenome ranges evolution
+```
+range-pangenome-evolution --hvcf-folder /Example_database/output/vcf_files/ --reference-file Ref.fa --range-bedfile output/ref_ranges.bed
+```
+The testing files are small, and new ranges are not included after including new genomes
+[RangesAmplificationSlope](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/RangesAmplificationSlope.png)
+
+
+#### Core, accesory and unique ranges
+```
+core-range-detecter --pangenome-hvcf output/MergedLinesA_B_C.h.vcf
+```
+These pangenome has either ranges in all haplotypes or only in one, as shown in plots:
+
+[MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_2.png)
+[MergedLinesA_B_C.2.png](https://github.com/jsarriaa/PHGv2Tools/blob/main/Misc/Images/MergedLinesA_B_C.h.vcf_1.png)
+
+
