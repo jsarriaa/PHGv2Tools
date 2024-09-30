@@ -1,4 +1,4 @@
-To guide any user about the usage of phgtools an example set is been prepared. It uses same files as [PHG testing kit]
+To guide any user about the usage of phgtools an example set has been prepared. It uses same files as [PHG testing kit]
 It actually takes: 
 - LineA.fa, LineB.fa, LineC.fa
 - Ref.fa
