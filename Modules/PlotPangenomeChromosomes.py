@@ -336,15 +336,15 @@ import re
 import subprocess
 import argparse
 
-def ___main___():
+def main():
 
     if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=___main___.__doc__)
-        parser.add_argument('--hvcf_folder', "-hvcf", help='Folder with the haplotype VCF files', required=True)
+        parser = argparse.ArgumentParser(description=main.__doc__)
+        parser.add_argument('--hvcf-folder', "-hvcf", help='Folder with the haplotype VCF files', required=True)
         parser.add_argument('--reference-hvcf', "-ref", help='Reference genome hvcf file', required=True)
         parser.add_argument('--chromosome', "-chr", help='Chromosome to plot. Enter: chrX (chr1, chr7...)', required=True)
         parser.add_argument('--region', "-reg", help='Region to . Add it with a "-" dividing the start-end (100000-245000). If no value is provided, by default whole chr will be ploted', required=False)
-        parser.add_argument('--reference_fasta', "-fa", help='Reference genome fasta file', required=True)
+        parser.add_argument('--reference-fasta', "-fa", help='Reference genome fasta file', required=True)
 
         args = parser.parse_args()
 
@@ -385,7 +385,7 @@ def ___main___():
 
 if __name__ == "__main__":
     try:
-        ___main___()    
+        main()    
     except KeyboardInterrupt:
         print("Script interrupted by user. Exiting...")
         sys.exit(0)

@@ -108,7 +108,9 @@ def hvcf2bed(hvcf, plot_folder, colors_dic):
     """
 
     if not os.path.exists(plot_folder):
-        raise Exception(f"Folder {plot_folder} does not exist")
+        os.makedirs(plot_folder)
+        print(f"Created directory: {plot_folder}")
+
     
     hvcf_BED = (f"{plot_folder}TEMP_{os.path.basename(hvcf).split('.')[0]}.bed")
 
@@ -329,7 +331,7 @@ def PrepareTrack_Hvcf2plot(hvcf, reference_name, plot_folder):
             track.write(f"height = 3\n")
             track.write(f"color = bed_rgb\n")
             track.write("display = collapsed\n")
-            track.write("labels = true\n")
+            track.write("labels = false\n")
             track.write("label_fontsize = 10\n")
             track.write("border_color = black\n")
             track.write("line_width = 0.05\n")
@@ -427,7 +429,7 @@ def AddLegendToPygenometracks (hvcf, plot_folder, genomes, reference_name):
 
     # Transform the colors RGB
     colors_dict, ref_color = assign_colors(genomes, reference_name)
-
+    num_genomes = len(genomes)
     # Convert colors from RGB to hex
     for genome in colors_dict:
         r, g, b = map(int, colors_dict[genome].split(','))
@@ -437,14 +439,14 @@ def AddLegendToPygenometracks (hvcf, plot_folder, genomes, reference_name):
 
     # Create legend elements
     legend_elements = [Line2D([0], [0], marker='o', color='w', label=genome, 
-                            markerfacecolor=colors_dict[genome], markersize=100) 
+                            markerfacecolor=colors_dict[genome], markersize=num_genomes*20)  
                     for genome in colors_dict]
     legend_elements.append(Line2D([0], [0], marker='o', color='w', label=reference_name, 
-                                markerfacecolor=ref_color[reference_name], markersize=100))
+                                markerfacecolor=ref_color[reference_name], markersize=num_genomes*20))
 
     # Create a new figure for the legend
     fig, ax = plt.subplots(figsize=(10, 10))  # Adjust size as necessary
-    ax.legend(handles=legend_elements, loc='center', frameon=False,fontsize=140)
+    ax.legend(handles=legend_elements, loc='center', frameon=False,fontsize=num_genomes*20)
 
     # Remove axes for a clean legend
     ax.axis('off')

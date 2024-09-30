@@ -1,0 +1,3 @@
+data/LineA.fa
+data/LineB.fa
+data/LineC.fa

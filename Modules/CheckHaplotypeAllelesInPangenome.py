@@ -23,51 +23,17 @@ def AmIaNotebook():
 #Check if the name of this file ends with .py or with .
 
 
-# In[8]:
-
-
-def SetupCheckHaplo(hvcf, reference_fasta):
-    """
-    If there are coordintates, use them.
-    If not,they will be asked
-    """
-
-    #If you leave this empty it will be asked later
-    #Coordinates:
-    start = None
-    end = None
-    chromosome = None
-
-    if not hvcf or reference_fasta:
-        raise ValueError("You must provide the path to the vcf and the reference")
-        exit(1)
-
-    # Check if start and end are provided, if not, prompt the user
-    if start is None and end is None and chromosome is None:
-        start = int(input("Start: "))
-        end = int(input("End: "))
-        chromosome = input("Chromosome: (enter only the number)")
-    else:
-        raise ValueError("You must provide either all or none of the coordinates")
-
-    return start, end, chromosome
-
+def DefineRange(hvcf, reference_fasta, start, end, chromosome):
     
-
-
-
-# In[9]:
-
-
-def DefineRange(hvcf, reference_fasta):
-    
-    start, end, chromosome = SetupCheckHaplo(hvcf, reference_fasta)
     print("Start: ", start)
     print("End: ", end)
     chromosome = "chr" + chromosome
     print("Chromosome: ", chromosome, "\n")
 
+
+
     keys = []
+    new_keys = []
 
     with open(hvcf, 'r') as f:
         for line in f:
@@ -80,10 +46,21 @@ def DefineRange(hvcf, reference_fasta):
                 ref_end = [i for i in line if i.startswith("END")]
                 ref_end = ref_end[0].split("=")[1]
 
-                if int(ref_start) <= start and int(ref_end) >= end:
+                #Check all ranges that overlap the coordinates
+                if int(ref_start) >= start and int(ref_end) <= end:
+
                     if line[0].startswith(chromosome):
-                        keys = line[4].split(",")
-                        keys = [i.strip("<>") for i in keys]
+                        new_keys = line[4].split(",")
+                        new_keys = [i.strip("<>") for i in new_keys]
+                        keys.extend(new_keys)
+
+                #check if a single range contains the coordinates
+                elif int(ref_start) <= start and int(ref_end) >= end:
+                    if line[0].startswith(chromosome):
+                        new_keys = line[4].split(",")
+                        new_keys = [i.strip("<>") for i in new_keys]
+                        keys.extend(new_keys)
+
 
     if keys == []:
         print("No range found containing the coordinates")
@@ -95,19 +72,12 @@ def DefineRange(hvcf, reference_fasta):
         print("\n")
         return keys
 
-                    
-                    
-
-
-
-
-
 # In[10]:
 
 
-def GetCoordinates(hvcf, reference_fasta):
+def GetCoordinates(hvcf, reference_fasta, start, end, chromosome):
 
-    keys = DefineRange(hvcf, reference_fasta)
+    keys = DefineRange(hvcf, reference_fasta, start, end, chromosome)
 
     if keys is None:
         pass
@@ -134,7 +104,7 @@ def GetCoordinates(hvcf, reference_fasta):
 # In[11]:
 
 
-def __main__():
+def main():
 
     """
     This script will take a vcf file and a reference fasta file and will return the coordinates of the ranges that contain the coordinates provided by the user.
@@ -149,9 +119,9 @@ def __main__():
 
 
     if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=__main__.__doc__)
+        parser = argparse.ArgumentParser(description=main.__doc__)
         parser.add_argument('--hvcf', "-hf", type=str, help='The hvcf file', required=True)
-        parser.add_argument('--reference_fasta', "-ref", type=str, help='The reference fasta file', required=True)
+        parser.add_argument('--reference-fasta', "-ref", type=str, help='The reference fasta file', required=True)
         parser.add_argument('--start', "-s", type=int, help='The start coordinate')
         parser.add_argument('--end', "-e", type=int, help='The end coordinate')
         parser.add_argument('--chromosome', "-c", type=str, help='The chromosome')
@@ -166,8 +136,17 @@ def __main__():
     else:
         hvcf = "/scratch/PHG/output/vcf_files/merged_hvcfs_19092024.h.vcf"
         reference_fasta = "/scratch/PHG/data/prepared_genomes/MorexV3.fa"
+        start = None        #Add the coordinates here if you want to provide them
+        end = None          #Add the coordinates here if you want to provide them
+        chromosome = None   #Add the chromosome here if you want to provide it
 
-    GetCoordinates(hvcf, reference_fasta)
+    if start is None and end is None and chromosome is None:
+        start = int(input("Start: "))
+        end = int(input("End: "))
+        chromosome = input("Chromosome: (enter only the number)")
+
+
+    GetCoordinates(hvcf, reference_fasta, start, end, chromosome)
 
 
 
@@ -176,7 +155,7 @@ def __main__():
 
 if __name__ == "__main__":
     try:
-        __main__()    
+        main()    
     except KeyboardInterrupt:
         print("Script interrupted by user. Exiting...")
         sys.exit(0)

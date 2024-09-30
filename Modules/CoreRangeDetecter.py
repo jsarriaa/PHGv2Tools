@@ -175,9 +175,9 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 
-def ___main___():
+def main():
     if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=___main___.__doc__)
+        parser = argparse.ArgumentParser(description=main.__doc__)
         parser.add_argument('--pangenome-hvcf', '-hvcf', help='Input hvcf file', required=True)
         args = parser.parse_args()
 
@@ -194,7 +194,7 @@ def ___main___():
 
 if __name__ == "__main__":
         try:
-            ___main___()    
+            main()    
         except KeyboardInterrupt:
             print("Script interrupted by user. Exiting...")
             sys.exit(0)

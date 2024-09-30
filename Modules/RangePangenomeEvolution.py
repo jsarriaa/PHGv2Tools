@@ -212,6 +212,7 @@ def PlotRangesSlope (hvcf_folder):
     plt.xlabel('Genomes')
     plt.ylabel('Ranges')
     plt.title('Ranges Amplification Slope')
+    plt.savefig(f"{hvcf_folder}/RangesAmplificationSlope.png")
     plt.show()
 
 
@@ -272,6 +273,7 @@ def PlotAllelesSlope(hvcf_folder):
     plt.xlabel('Genomes')
     plt.ylabel('Ranges "alleles"')
     plt.title('Ranges Variation Slope')
+    #plt.savefig(f"{hvcf_folder}/RangesVariationSlope.png")
     plt.show()
 
 
@@ -295,7 +297,7 @@ import inspect
 import argparse
 from IPython import get_ipython
 
-def ___main___():
+def main():
     def AmIaNotebook():
         try:
             shell = get_ipython().__class__.__name__
@@ -311,10 +313,10 @@ def ___main___():
     #Check if the name of this file ends with .py or with .
 
     if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=___main___.__doc__)
-        parser.add_argument('--hvcf_folder', "-hf", type=str, help='The folder with the hvcf files')
-        parser.add_argument('--reference_file', "-ref", type=str, help='The reference file')
-        parser.add_argument('--range_bedfile', "-bed", type=str, help='The range bedfile')
+        parser = argparse.ArgumentParser(description=main.__doc__)
+        parser.add_argument('--hvcf-folder', "-hf", type=str, help='The folder with the hvcf files')
+        parser.add_argument('--reference-file', "-ref", type=str, help='The reference file')
+        parser.add_argument('--range-bedfile', "-bed", type=str, help='The range bedfile')
         args = parser.parse_args()
 
         hvcf_folder = args.hvcf_folder
@@ -353,7 +355,7 @@ def ___main___():
 
 if __name__ == "__main__":
     try:
-        ___main___()
+        main()
     except KeyboardInterrupt:
         print("Script interrupted by user. Exiting...")
         shutil.rmtree(temp_folder)
