@@ -12,6 +12,7 @@ setup(
             "plot-imputed-hvcf = PHGv2Tools.Modules.PlotImputedHvcf:main",
             "plot-pangenome-chromosomes = PHGv2Tools.Modules.PlotPangenomeChromosomes:main",
             "range-pangenome-evolution = PHGv2Tools.Modules.RangePangenomeEvolution:main",
+            "phgtools = PHGv2Tools.phgtools:main",
         ],
     },
     author='Joan Sarria',

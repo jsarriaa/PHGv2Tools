@@ -55,11 +55,12 @@ def check_imputation(hvcf_files, hvcf_file):
                 filtred_hvcf_lines.append(line)
         
         total_ranges = len(filtred_hvcf_lines)
-        print (f"Total ranges in {hvcf_file} is {total_ranges}")
+        print (f"\nTotal ranges in {hvcf_file} is {total_ranges}")
 
     for hvcf_file in hvcf_files:
         with gzip.open(hvcf_file, "rt") as f:
-            print (f"Checking {f}")
+            file_name = os.path.basename(f.name).split(".")[0]
+            print (f"\nChecking {file_name}")
             pang_content = f.read()
             match_count = 0
 
@@ -76,7 +77,7 @@ def check_imputation(hvcf_files, hvcf_file):
                 else:
                     #print (f"Match not found for {key}")
                     continue
-        print (f"Match count for {hvcf_file} is {match_count} out of {total_ranges} ranges({round(match_count/total_ranges*100, 2)}%)")
+        print (f"Match count for {file_name} is {match_count} out of {total_ranges} ranges({round(match_count/total_ranges*100, 2)}%)")
         dict_distances[hvcf_file] = round(match_count/total_ranges*100, 2)
 
     return dict_distances
