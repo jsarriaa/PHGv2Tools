@@ -1,4 +1,12 @@
 from setuptools import setup, find_packages
+import os
+
+# Ensure the README.md file exists
+if os.path.exists('README.md'):
+    with open('README.md', 'r') as fh:
+        long_description = fh.read()
+else:
+    long_description = ''
 
 setup(
     name='PHGv2Tools',
@@ -18,7 +26,7 @@ setup(
     author='Joan Sarria',
     author_email='jsarria@eead.csic.es',
     description='Package to downstream analysis of pangenomes databases, working with Practical Haplotype Graph and its h.VCF files',
-    long_description=open('README.md').read(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jsarriaa/PHGv2Tools',
     classifiers=[
