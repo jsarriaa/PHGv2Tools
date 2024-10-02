@@ -54,27 +54,32 @@ To use this package, a conda environment is used. It is a modified version of th
 ```
 git clone https://github.com/jsarriaa/PHGv2Tools.git
 ```
-Load it
-```
-cd PHGv2Tools
-```
-Install it
-```
-pip install .
-```
 #### Install conda
-Prepare
 ```
-chmod +x CondaSetup.sh
-```
-Install phgtools conda
-```
-./CondaSetup.sh
-```
-Activate phgtools conda
-```
+chmod +x /PHGv2Tools/Misc/CondaSetup.sh
+PHGv2Tools/Misc/CondaSetup.sh
 conda activate phgtools
 ```
+#### Install PHGv2Tools
+```
+pip install PHGv2Tools/
+```
+Note* Is important to NOT change the working directory; PHGv2Tools will be included in PYTHONPATH, and you will be able to call ```phgtools --help``` from everywhere.
+If it is not the case and the package is not found, you may check:
+```
+pip show PHGv2Tools
+echo $PYTHONPATH
+export PYTHONPATH=\$PYTHONPATH:$/Your/path/previous/to/    #Path must be the folder containing the PGHv2Tools/ ===>  Being the real path: /Your/Path/previous/to/PHGv2Tools/...
+```
+If it did not work automatically and you want to keep permanently the path at your terminal:
+```
+nano ~/.bashrc
+# And add at the end of the file:
+export PYTHONPATH=$PYTHONPATH:/Your/path/previous/to/
+# Save and close the file
+source ~/.bashrc
+```
+
 #### Install PHG
 Ensure to have installed PHGv2. Follow the steps [here](https://phg.maizegenetics.net/installation/)
 
