@@ -58,6 +58,7 @@ git clone https://github.com/jsarriaa/PHGv2Tools.git
 ```
 chmod +x /PHGv2Tools/Misc/CondaSetup.sh
 PHGv2Tools/Misc/CondaSetup.sh
+source ~/.bashrc  #Will update PYTHONPATH and allow to call phgtools from anywhere
 conda activate phgtools
 ```
 #### Install PHGv2Tools
