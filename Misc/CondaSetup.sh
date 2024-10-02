@@ -41,4 +41,16 @@ conda activate phgtools
 
 echo "The environment has been set up and pygenometracks has been installed."
 echo "The environment name is: $ENV_NAME"
-echo "To activate the environment, run the following command: conda activate $ENV_NAME"
+echo "To activate the environment, run the following command: conda activate $ENV_NAME"ç
+
+# Remove the .yml file
+rm phgtools_environment.yml
+echo "The .yml file has been removed"
+
+# Check if the pwd is included in the PYTHONPATH
+if [[ ":$PYTHONPATH:" != *":$PWD:"* ]]; then
+    echo "export PYTHONPATH=$PWD:\$PYTHONPATH" >> ~/.bashrc
+    echo "The current directory has been added to the PYTHONPATH"
+fi
+source ~/.bashrc
+

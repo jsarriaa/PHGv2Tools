@@ -14,12 +14,12 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            "check-imputated-haplotype = PHGv2Tools.Modules.CheckImputatedHaplotype:main",
-            "check-haplotype-alleles = PHGv2Tools.Modules.CheckHaplotypeAllelesInPangenome:main",
-            "core-range-detecter = PHGv2Tools.Modules.CoreRangeDetecter:main",
-            "plot-imputed-hvcf = PHGv2Tools.Modules.PlotImputedHvcf:main",
-            "plot-pangenome-chromosomes = PHGv2Tools.Modules.PlotPangenomeChromosomes:main",
-            "range-pangenome-evolution = PHGv2Tools.Modules.RangePangenomeEvolution:main",
+            "check-imputated-haplotype = Modules.CheckImputatedHaplotype:main",
+            "check-haplotype-alleles = Modules.CheckHaplotypeAllelesInPangenome:main",
+            "core-range-detecter = Modules.CoreRangeDetecter:main",
+            "plot-imputed-hvcf = Modules.PlotImputedHvcf:main",
+            "plot-pangenome-chromosomes = Modules.PlotPangenomeChromosomes:main",
+            "range-pangenome-evolution = Modules.RangePangenomeEvolution:main",
             "phgtools = PHGv2Tools.phgtools:main",
         ],
     },
