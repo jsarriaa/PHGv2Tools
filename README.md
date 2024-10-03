@@ -32,19 +32,20 @@ Functions supported now:
 
 #### Quick Start
 ```
-range-pangenome-evolution --hvcf-folder /Example_database/output/vcf_files/ --reference-file Ref.fa --range-bedfile output/ref_ranges.bed
+phgtools range-pangenome-evolution --hvcf-folder /Example_database/output/vcf_files/ --reference-file Ref.fa --range-bedfile output/ref_ranges.bed
 
-core-range-detecter --pangenome-hvcf output/MergedLinesA_B_C.h.vcf
+phgtools core-range-detecter --pangenome-hvcf output/MergedLinesA_B_C.h.vcf
 
-plot-pangenome-chromosomes --hvcf-folder output/vcf_files/ --reference-hvcf output/Ref.h.vcf.gz --chromosome chr2 --region 15000-35000 --reference-fasta Ref.fa
+phgtools plot-pangenome-chromosomes --hvcf-folder output/vcf_files/ --reference-hvcf output/Ref.h.vcf.gz --chromosome chr2 --region 15000-35000 --reference-fasta Ref.fa
 
-check-haplotype-alleles --hvcf output/MergedLinesA_B_C.h.vcf --reference-fasta Ref.fa --start 18800 --end 20100 --chromosome 2
+phgtools check-haplotype-alleles --hvcf output/MergedLinesA_B_C.h.vcf --reference-fasta Ref.fa --start 18800 --end 20100 --chromosome 2
 
-check-imputated-haplotype --hvcf-folder output/ --hvcf-file output/LineD.h.vcf
+phgtools check-imputated-haplotype --hvcf-folder output/ --hvcf-file output/LineD.h.vcf
 
-plot-imputed-hvcf --input-hvcf output/LineD.h.vcf --pangenome-hvcf-folder output/ --reference-hvcf hvcf_files/Ref.h.vcf.gz
+phgtools plot-imputed-hvcf --input-hvcf output/LineD.h.vcf --pangenome-hvcf-folder output/ --reference-hvcf hvcf_files/Ref.h.vcf.gz
 ```
 
+Find examples of usage at the [Example database](https://github.com/jsarriaa/PHGv2Tools/tree/main/Example_database)
 
 ## Installation
 To use this package, a conda environment is used. It is a modified version of the original phg one, adding the pygenometracks package for python plotting. For everything further needed, it will be updated.
