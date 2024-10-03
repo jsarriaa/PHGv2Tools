@@ -23,7 +23,7 @@ def AmIaNotebook():
 #Check if the name of this file ends with .py or with .
 
 
-def DefineRange(hvcf, reference_fasta, start, end, chromosome):
+def DefineRange(pangenome_hvcf, reference_fasta, start, end, chromosome):
     
     print("Start: ", start)
     print("End: ", end)
@@ -35,7 +35,7 @@ def DefineRange(hvcf, reference_fasta, start, end, chromosome):
     keys = []
     new_keys = []
 
-    with open(hvcf, 'r') as f:
+    with open(pangenome_hvcf, 'r') as f:
         for line in f:
             if line.startswith("#"):
                 continue
@@ -75,15 +75,15 @@ def DefineRange(hvcf, reference_fasta, start, end, chromosome):
 # In[10]:
 
 
-def GetCoordinates(hvcf, reference_fasta, start, end, chromosome):
+def GetCoordinates(pangeonme_hvcf, reference_fasta, start, end, chromosome):
 
-    keys = DefineRange(hvcf, reference_fasta, start, end, chromosome)
+    keys = DefineRange(pangeonme_hvcf, reference_fasta, start, end, chromosome)
 
     if keys is None:
         pass
 
     else:
-        with open(hvcf, 'r') as f:
+        with open(pangeonme_hvcf, 'r') as f:
             for line in f:
                 if not line.startswith("#"):
                     continue
@@ -100,11 +100,17 @@ def GetCoordinates(hvcf, reference_fasta, start, end, chromosome):
 
                             print(f"Line: {samplename}\tRegion: {region}\tReference range:{ref_range} ")
 
+                            
 
 # In[11]:
+if AmIaNotebook() == True:
+    pangenome_hvcf = "/scratch/PHG/output/vcf_files/merged_hvcfs_19092024.h.vcf"
+    reference_fasta = "/scratch/PHG/data/prepared_genomes/MorexV3.fa"
+    start = None        #Add the coordinates here if you want to provide them
+    end = None          #Add the coordinates here if you want to provide them
+    chromosome = None   #Add the chromosome here if you want to provide it
 
-
-def main():
+def main(pangenome_hvcf, reference_fasta, start, end, chromosome):
 
     """
     This script will take a vcf file and a reference fasta file and will return the coordinates of the ranges that contain the coordinates provided by the user.
@@ -114,31 +120,10 @@ def main():
 
     import os
     import pandas as pd
-    import argparse
     import sys
 
 
-    if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=main.__doc__)
-        parser.add_argument('--hvcf', "-hf", type=str, help='The hvcf file', required=True)
-        parser.add_argument('--reference-fasta', "-ref", type=str, help='The reference fasta file', required=True)
-        parser.add_argument('--start', "-s", type=int, help='The start coordinate')
-        parser.add_argument('--end', "-e", type=int, help='The end coordinate')
-        parser.add_argument('--chromosome', "-c", type=str, help='The chromosome')
-        args = parser.parse_args()
 
-        start = args.start
-        end = args.end
-        chromosome = args.chromosome
-        hvcf = args.hvcf
-        reference_fasta = args.reference_fasta
-
-    else:
-        hvcf = "/scratch/PHG/output/vcf_files/merged_hvcfs_19092024.h.vcf"
-        reference_fasta = "/scratch/PHG/data/prepared_genomes/MorexV3.fa"
-        start = None        #Add the coordinates here if you want to provide them
-        end = None          #Add the coordinates here if you want to provide them
-        chromosome = None   #Add the chromosome here if you want to provide it
 
     if start is None and end is None and chromosome is None:
         start = int(input("Start: "))
@@ -146,7 +131,9 @@ def main():
         chromosome = input("Chromosome: (enter only the number)")
 
 
-    GetCoordinates(hvcf, reference_fasta, start, end, chromosome)
+    GetCoordinates(pangenome_hvcf, reference_fasta, start, end, chromosome)
+
+    print("\nWork in progress: to ask if the user wants to download a fasta file with the sequence of the range")
 
 
 

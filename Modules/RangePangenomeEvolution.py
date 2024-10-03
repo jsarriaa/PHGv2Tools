@@ -98,9 +98,9 @@ def AmIaNotebook():
 # In[6]:
 
 
-def import_pangenome_genomes(hvcf_folder):
+def import_pangenome_genomes(pangenome_hvcf_folder):
 
-    hvcf_files = glob.glob(hvcf_folder + '/*.h.vcf.gz')
+    hvcf_files = glob.glob(pangenome_hvcf_folder + '/*.h.vcf.gz')
 
     print (f"There are {len(hvcf_files)} genomes at the pangenome")
     
@@ -111,10 +111,10 @@ def import_pangenome_genomes(hvcf_folder):
 
 #open the temporary folder
 
-def open_temp_folder_RangePangenomeEvolution(hvcf_folder):
-    hvcf_files = glob.glob(hvcf_folder + '/*.h.vcf.gz')
+def open_temp_folder_RangePangenomeEvolution(pangenome_hvcf_folder):
+    hvcf_files = glob.glob(pangenome_hvcf_folder + '/*.h.vcf.gz')
 
-    temp_folder = f"{hvcf_folder}/temp"
+    temp_folder = f"{pangenome_hvcf_folder}/temp"
 
     if os.path.exists(temp_folder):
         print("The temporary folder already exists, deleting it and whole content and opening it again")
@@ -130,9 +130,9 @@ def open_temp_folder_RangePangenomeEvolution(hvcf_folder):
 # In[8]:
 
 
-def loophvcf_files(hvcf_folder, reference_file, range_bedfile):
-    hvcf_files = glob.glob(hvcf_folder + '/*.h.vcf.gz')
-    temp_folder = f"{hvcf_folder}/temp/"
+def loophvcf_files(pangenome_hvcf_folder, reference_fasta, range_bedfile):
+    hvcf_files = glob.glob(pangenome_hvcf_folder + '/*.h.vcf.gz')
+    temp_folder = f"{pangenome_hvcf_folder}/temp/"
 
     hvcf_processed = []
     genomes_count = 0
@@ -143,9 +143,9 @@ def loophvcf_files(hvcf_folder, reference_file, range_bedfile):
         genomes_count += 1
         hvcf_processed.append(file)
 
-        command = f"phg merge-hvcfs --input-dir {temp_folder} --output-file {temp_folder}{genomes_count}.h.vcf --id-format CHECKSUM --reference-file {reference_file} --range-bedfile {range_bedfile}"
-        print(command)  
-        os.system(command)
+        command = f"phg merge-hvcfs --input-dir {temp_folder} --output-file {temp_folder}{genomes_count}.h.vcf --id-format CHECKSUM --reference-file {reference_fasta} --range-bedfile {range_bedfile}"
+        #print(command)  
+        os.system(command + " > /dev/null 2>&1")
 
         #remove the copied file and camuflate the generated files to not be used or deleted. Tricking the first one to be conservated and used as well.
         os.system(f"rm {temp_folder}*.h.vcf.gz")
@@ -161,14 +161,16 @@ def loophvcf_files(hvcf_folder, reference_file, range_bedfile):
     os.system(f"mv {temp_folder}{genomes_count}.h.vcf {temp_folder}{genomes_count}.h.vcf.YouCanNotSeeMe") 
 
 
+
+
 # In[9]:
 
 
-def RangesAmplificationSlope (hvcf_folder):
+def RangesAmplificationSlope (pangenome_hvcf_folder):
     
-    hvcf_files = glob.glob(hvcf_folder + '/*.h.vcf.gz')
+    hvcf_files = glob.glob(pangenome_hvcf_folder + '/*.h.vcf.gz')
 
-    temp_folder = f"{hvcf_folder}temp/"
+    temp_folder = f"{pangenome_hvcf_folder}temp/"
     temp_files = glob.glob(temp_folder + '/*.h.vcf.YouCanNotSeeMe')
 
     #sort temporarly files, by number from 0 to n
@@ -203,16 +205,23 @@ def RangesAmplificationSlope (hvcf_folder):
 # In[10]:
 
 
-def PlotRangesSlope (hvcf_folder):
+def PlotRangesSlope (pangenome_hvcf_folder):
 
-    ranges_dict = RangesAmplificationSlope(hvcf_folder)
+    ranges_dict = RangesAmplificationSlope(pangenome_hvcf_folder)
 
-    #plot the ranges
-    plt.plot(ranges_dict.keys(), ranges_dict.values())
+    # Convert keys to integers
+    int_keys = list(map(int, ranges_dict.keys()))
+
+    # Plot the ranges
+    plt.plot(int_keys, ranges_dict.values())
     plt.xlabel('Genomes')
     plt.ylabel('Ranges')
     plt.title('Ranges Amplification Slope')
-    plt.savefig(f"{hvcf_folder}/RangesAmplificationSlope.png")
+
+    # Set x-axis ticks to integer values
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    plt.savefig(f"{pangenome_hvcf_folder}/RangesAmplificationSlope.png")
     plt.show()
 
 
@@ -222,15 +231,15 @@ def PlotRangesSlope (hvcf_folder):
 # In[11]:
 
 
-def RangesVariationSlope (hvcf_folder):
+def RangesVariationSlope (pangenome_hvcf_folder):
 
-    temp_folder = f"{hvcf_folder}temp/"
+    temp_folder = f"{pangenome_hvcf_folder}temp/"
     temp_files = glob.glob(temp_folder + '/*.h.vcf.YouCanNotSeeMe')
     temp_files.sort(key = lambda x: int(x.split("/")[-1].split(".")[0]))
     if len(temp_files) == 0:
         raise Exception("There are no files to process")
 
-    ranges_dict = RangesAmplificationSlope(hvcf_folder) 
+    ranges_dict = RangesAmplificationSlope(pangenome_hvcf_folder) 
 
     files_processed = 0
     keys_dict = {}
@@ -266,15 +275,19 @@ def RangesVariationSlope (hvcf_folder):
 # In[12]:
 
 
-def PlotAllelesSlope(hvcf_folder):
-    keys_dict = RangesVariationSlope(hvcf_folder)
+def PlotAllelesSlope(pangenome_hvcf_folder):
+    keys_dict = RangesVariationSlope(pangenome_hvcf_folder)
 
-    plt.plot(keys_dict.keys(), keys_dict.values())
-    plt.xlabel('Genomes')
-    plt.ylabel('Ranges "alleles"')
-    plt.title('Ranges Variation Slope')
-    #plt.savefig(f"{hvcf_folder}/RangesVariationSlope.png")
-    plt.show()
+# Still working on this, not useful yet
+
+    # plt.plot(keys_dict.keys(), keys_dict.values())
+    # plt.xlabel('Genomes')
+    # plt.ylabel('Ranges "alleles"')
+    # plt.title('Ranges Variation Slope')
+    # plt.xticks(range(len(keys_dict)))
+    
+    # plt.savefig(f"{pangenome_hvcf_folder}/RangesVariationSlope.png")
+    # plt.show()
 
 
 # In[13]:
@@ -296,55 +309,33 @@ import matplotlib.pyplot as plt
 import inspect
 import argparse
 from IPython import get_ipython
-
-def main():
-    def AmIaNotebook():
-        try:
-            shell = get_ipython().__class__.__name__
-            if shell == 'ZMQInteractiveShell':
-                return True  # Jupyter notebook or qtconsole
-            elif shell == 'TerminalInteractiveShell':
-                return False  # Terminal running IPython
-            else:
-                return False  # Other type of environment
-        except NameError:
-            return False  # Not in an interactive environment
-
-    #Check if the name of this file ends with .py or with .
-
-    if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=main.__doc__)
-        parser.add_argument('--hvcf-folder', "-hf", type=str, help='The folder with the hvcf files')
-        parser.add_argument('--reference-file', "-ref", type=str, help='The reference file')
-        parser.add_argument('--range-bedfile', "-bed", type=str, help='The range bedfile')
-        args = parser.parse_args()
-
-        hvcf_folder = args.hvcf_folder
-        reference_file = args.reference_file
-        range_bedfile = args.range_bedfile
-
-    else:
-        
-        hvcf_folder = "/scratch/PHG/output/vcf_files/"
-        reference_file = "/scratch/PHG/data/prepared_genomes/MorexV3.fa"
-        range_bedfile = "/scratch/PHG/data/ref_ranges.bed"
+from matplotlib.ticker import MaxNLocator
 
 
-    temp_folder = f"{hvcf_folder}/temp"
+if AmIaNotebook():
+    pangenome_hvcf_folder = "/scratch/PHG/output/vcf_files/"
+    reference_fasta = "/scratch/PHG/data/prepared_genomes/MorexV3.fa"
+    range_bedfile = "/scratch/PHG/data/ref_ranges.bed"
 
-    import_pangenome_genomes(hvcf_folder)
+def main(pangenome_hvcf_folder, reference_fasta, range_bedfile):
 
-    open_temp_folder_RangePangenomeEvolution(hvcf_folder)  #Commented to avoid deleting the folder every single time
+    if not os.path.exists(pangenome_hvcf_folder) or not os.path.exists(reference_fasta) or not os.path.exists(range_bedfile):
+        raise Exception("Provide arguments")
+    
 
-    loophvcf_files(hvcf_folder, reference_file, range_bedfile)     #Lo comento para no repetir durante los tests
+    temp_folder = f"{pangenome_hvcf_folder}/temp"
 
-    RangesAmplificationSlope(hvcf_folder)
+    import_pangenome_genomes(pangenome_hvcf_folder)
 
-    PlotRangesSlope(hvcf_folder)
+    open_temp_folder_RangePangenomeEvolution(pangenome_hvcf_folder)  #Commented to avoid deleting the folder every single time
 
-    RangesVariationSlope(hvcf_folder)
+    loophvcf_files(pangenome_hvcf_folder, reference_fasta, range_bedfile)     #Lo comento para no repetir durante los tests
 
-    PlotAllelesSlope(hvcf_folder)
+    PlotAllelesSlope(pangenome_hvcf_folder)
+
+    PlotRangesSlope(pangenome_hvcf_folder)
+    
+    print(f"plot: {pangenome_hvcf_folder}/RangesAmplificationSlope.png")
 
     #At some point, delete whole temp folder
     shutil.rmtree(temp_folder)

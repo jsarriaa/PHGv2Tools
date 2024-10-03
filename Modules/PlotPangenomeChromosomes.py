@@ -22,11 +22,11 @@ def AmIaNotebook():
 # In[20]:
 
 
-def DefineHVCFs(hvcf_folder, reference_hvcf):
+def DefineHVCFs(pangenome_hvcf_folder, reference_hvcf):
     """
     Define the haplotype VCF files to be plotted
     """
-    haplotype_files = [f for f in os.listdir(hvcf_folder) if f.endswith('.h.vcf.gz')]
+    haplotype_files = [f for f in os.listdir(pangenome_hvcf_folder) if f.endswith('.h.vcf.gz')]
     if reference_hvcf in haplotype_files:
         haplotype_files.remove(reference_hvcf)
 
@@ -89,7 +89,7 @@ def PangenomeColors(reference_name, haplotype_names):
 # In[22]:
 
 
-def CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, reference_hvcf, colors_dic, columns_header):
+def CreateBedFile(pangenome_hvcf_folder, plots_folder, haplotype_names, reference_name, reference_hvcf, colors_dic, columns_header):
     """
     Create the bed files for each genome haplotype
     """
@@ -97,11 +97,11 @@ def CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, re
     for file in haplotype_names:
         #check if file already exists:
         print(f"starting to process {file}...")
-        if os.path.exists(f"{hvcf_folder}plots/{file}_haplotype.bed"):
+        if os.path.exists(f"{pangenome_hvcf_folder}plots/{file}_haplotype.bed"):
             print(f"file {file}_haplotype.bed already exists, removing and making it again...")
-            os.remove(f"{hvcf_folder}plots/{file}_haplotype.bed")
+            os.remove(f"{pangenome_hvcf_folder}plots/{file}_haplotype.bed")
             first_line = True
-            with gzip.open(f"{hvcf_folder}{file}.h.vcf.gz", 'rt', encoding='utf-8', errors='ignore') as vcf_file, open(f"{hvcf_folder}plots/{file}_haplotype.bed", 'w') as output:
+            with gzip.open(f"{pangenome_hvcf_folder}{file}.h.vcf.gz", 'rt', encoding='utf-8', errors='ignore') as vcf_file, open(f"{pangenome_hvcf_folder}plots/{file}_haplotype.bed", 'w') as output:
                 lines = vcf_file.readlines()
                 contig_haplotypes = [line for line in lines if not line.startswith("#")]
                 for haplotype_line in contig_haplotypes:
@@ -128,7 +128,7 @@ def CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, re
             os.makedirs(plots_folder, exist_ok=True)
             print(f"generating {file}_haplotype.bed...")
             first_line = True
-            with gzip.open(f"{hvcf_folder}{file}.h.vcf.gz", 'rt', encoding='utf-8', errors='ignore') as vcf_file, open(f"{hvcf_folder}plots/{file}_haplotype.bed", 'w') as output:
+            with gzip.open(f"{pangenome_hvcf_folder}{file}.h.vcf.gz", 'rt', encoding='utf-8', errors='ignore') as vcf_file, open(f"{pangenome_hvcf_folder}plots/{file}_haplotype.bed", 'w') as output:
                 lines = vcf_file.readlines()
                 contig_haplotypes = [line for line in lines if not line.startswith("#")]
                 for haplotype_line in contig_haplotypes:
@@ -153,9 +153,9 @@ def CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, re
     #Same for reference
 
     print(f"starting to process {reference_name}...")
-    if os.path.exists(f"{hvcf_folder}plots/{reference_name}_haplotype.bed"):
+    if os.path.exists(f"{pangenome_hvcf_folder}plots/{reference_name}_haplotype.bed"):
                 print(f"file {reference_name}_haplotype.bed already exists, removing and making it again...")
-                os.remove(f"{hvcf_folder}plots/{reference_name}_haplotype.bed")
+                os.remove(f"{pangenome_hvcf_folder}plots/{reference_name}_haplotype.bed")
                 first_line = True
     if reference_name != None:            
         with gzip.open(f"{reference_hvcf}", 'rt', encoding='utf-8', errors='ignore') as vcf_file, open(f"{plots_folder}{reference_name}_haplotype.bed", 'w') as output:
@@ -188,23 +188,23 @@ def CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, re
 # In[23]:
 
 
-def WholeChrLenght(ref_fasta, chromosome_to_plot, reference_name, region_to_plot):
+def WholeChrLenght(reference_fasta, chromosome_to_plot, reference_name, region_to_plot):
 
     """
     Get the whole chromosome length only if plotting the whole chromosome
     """
 
     #extract the list of real chromosomes
-    with open(ref_fasta, 'r') as fasta_file:
+    with open(reference_fasta, 'r') as fasta_file:
         fasta_lines = fasta_file.readlines()
-        chromosomes = [line for line in fasta_lines if line.startswith(">chr")]
+        chromosomes = [line for line in fasta_lines if line.startswith(">")]
         real_chromosomes = [chromosome.split(' ')[0].replace(">", "") for chromosome in chromosomes]
-        print(real_chromosomes)
+        print(f"real chr: {real_chromosomes}")
 
         chromosome_dict = {f"chr{i+1}": real_chromosomes[i] for i in range(len(real_chromosomes))}
 
     # Print the dictionary
-    print(chromosome_dict)
+    print(f"chr_dict = {chromosome_dict}")
 
     if region_to_plot == None:
 
@@ -244,6 +244,9 @@ def DefineRegion(region_to_plot, chromosome_to_plot, plots_folder):
 
     if region_to_plot:
         start, end = region_to_plot.split("-")
+        if start > end:
+            start, end = end, start
+            region_to_plot = f"{start}-{end}"
         output_png = f"{plots_folder}pangenome_{chromosome_to_plot}_{region_to_plot}.png"
         region_to_plot = f"{start}-{end}"
 
@@ -256,8 +259,8 @@ def DefineRegion(region_to_plot, chromosome_to_plot, plots_folder):
 # In[25]:
 
 
-def PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosome_dict, region_to_plot, output_png, reference_name, haplotype_names):
-    
+def PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosome_dict, start, end, output_png, reference_name, haplotype_names):
+
     pangenome_haplotypes = [f for f in os.listdir(plots_folder) if f.endswith('_haplotype.bed')]
     if reference_name in pangenome_haplotypes:
         pangenome_haplotypes.remove(reference_name)
@@ -284,7 +287,7 @@ def PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosom
             track.write("display = collapsed\n")
             track.write("labels = false\n")
             track.write("border_color = black\n")
-            track.write("line_width = 0.05\n")
+            track.write("line_width = 1\n")
     #       track.write("type = bed\n")    #by default is the extension, not necessary
             track.write("\n")
             track.write("[spacer]\nheight = 0.5\n")
@@ -298,7 +301,7 @@ def PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosom
         track.write("display = collapsed\n")
         track.write("labels = false\n")
         track.write("border_color = white\n")
-        track.write("line_width = 0.05\n")
+        track.write("line_width = 1\n")
     #       track.write("type = bed\n")    #by default is the extension, not necessary
         track.write("\n")
         track.write("[spacer]\nheight = 0.1\n")
@@ -312,10 +315,17 @@ def PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosom
 
     print(f"track.ini file is {track_ini}")
 
-    if not region_to_plot == None:
-        command_Genome_tracks = f"--tracks {track_ini} -o {output_png} --region {chromosome_dict[chromosome_to_plot]}:{region_to_plot} --dpi 300 --width 75 --fontSize 15"
+    region_to_plot = f"{chromosome_to_plot}:{start}-{end}" if start is not None and end is not None else None
+    print(f"start: {start}, end: {end}")
+    print(f"region_to_plot: {region_to_plot}")
+
+    if region_to_plot is not None:
+        print(f"plotting region {chromosome_dict[chromosome_to_plot]}:{start}-{end}")
+        command_Genome_tracks = f"--tracks {track_ini} -o {output_png} --region {chromosome_dict[chromosome_to_plot]}:{start}-{end} --dpi 300 --width 75 --fontSize 15"
 
     else:   #by default whole chromosome
+        print(f"plotting whole chromosome {chromosome_dict[chromosome_to_plot]}")
+        print(f"chromosome_length: {chromosome_length}")
         command_Genome_tracks = f"--tracks {track_ini} -o {output_png} --region {chromosome_dict[chromosome_to_plot]}:1-{chromosome_length} --dpi 300 --width 75 --fontSize 15 "
 
     print(command_Genome_tracks)
@@ -336,48 +346,36 @@ import re
 import subprocess
 import argparse
 
-def main():
+region_to_plot = None
 
-    if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=main.__doc__)
-        parser.add_argument('--hvcf-folder', "-hvcf", help='Folder with the haplotype VCF files', required=True)
-        parser.add_argument('--reference-hvcf', "-ref", help='Reference genome hvcf file', required=True)
-        parser.add_argument('--chromosome', "-chr", help='Chromosome to plot. Enter: chrX (chr1, chr7...)', required=True)
-        parser.add_argument('--region', "-reg", help='Region to . Add it with a "-" dividing the start-end (100000-245000). If no value is provided, by default whole chr will be ploted', required=False)
-        parser.add_argument('--reference-fasta', "-fa", help='Reference genome fasta file', required=True)
 
-        args = parser.parse_args()
-
-        hvcf_folder = args.hvcf_folder
-        reference_hvcf = args.reference_hvcf
-        chromosome_to_plot = args.chromosome
-        region_to_plot = args.region
-        ref_fasta = args.reference_fasta
-
-    else:    
-
-        hvcf_folder = "/genoma/nfs/PHG/output/vcf_files/"
+if AmIaNotebook():
+        
+        pangenome_hvcf_folder = "/genoma/nfs/PHG/output/vcf_files/"
         chromosome_to_plot = "chr7" #give imput of which chromosome to plot
         reference_hvcf = "/genoma/nfs/PHG/vcf_dbs/hvcf_files/MorexV3.h.vcf.gz"
-        ref_fasta = "/genoma/nfs/PHG/data/prepared_genomes/MorexV3.fa"
+        reference_fasta = "/genoma/nfs/PHG/data/prepared_genomes/MorexV3.fa"
         region_to_plot = None
 
-    if not region_to_plot:
-        region_to_plot = None
+def main(pangenome_hvcf_folder, chromosome, reference_hvcf, reference_fasta, region):
 
-    plots_folder = f"{hvcf_folder}plots/"
+    region_to_plot = region
 
-    haplotype_files, haplotype_names, reference_name = DefineHVCFs(hvcf_folder, reference_hvcf)
+    chromosome_to_plot = chromosome
 
-    colors_dic, ref_color, columns_header = PangenomeColors(reference_name, haplotype_names)
-
-    CreateBedFile(hvcf_folder, plots_folder, haplotype_names, reference_name, reference_hvcf, colors_dic, columns_header)
-
-    chromosome_length, chromosome_dict = WholeChrLenght(ref_fasta, chromosome_to_plot, reference_name, region_to_plot)
+    plots_folder = f"{pangenome_hvcf_folder}plots/"
 
     start, end, output_png = DefineRegion(region_to_plot, chromosome_to_plot, plots_folder)
 
-    PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosome_dict, region_to_plot, output_png, reference_name, haplotype_names)
+    haplotype_files, haplotype_names, reference_name = DefineHVCFs(pangenome_hvcf_folder, reference_hvcf)
+
+    colors_dic, ref_color, columns_header = PangenomeColors(reference_name, haplotype_names)
+
+    CreateBedFile(pangenome_hvcf_folder, plots_folder, haplotype_names, reference_name, reference_hvcf, colors_dic, columns_header)
+
+    chromosome_length, chromosome_dict = WholeChrLenght(reference_fasta, chromosome_to_plot, reference_name, region_to_plot)
+
+    PlotPangenome(plots_folder, chromosome_to_plot, chromosome_length, chromosome_dict, start, end, output_png, reference_name, haplotype_names)
 
 
 # In[27]:

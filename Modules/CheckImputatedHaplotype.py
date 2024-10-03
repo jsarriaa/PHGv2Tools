@@ -106,30 +106,24 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 
-def main():
+if AmIaNotebook() == True:
 
-    if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=main.__doc__)
-        parser.add_argument("--hvcf-folder", "-folder", help="Folder with the pangenome genomes", required=True)
-        parser.add_argument("--hvcf-file", "-file", help="File with the ranges to check", required=True)
-        args = parser.parse_args()
+    pangenome_folder = "/scratch/PHG/output/vcf_files/"
+    imputed_hvcf = "/scratch/PHG/output/ensambled_genomes/1740D-268-01_S1_L001_R1_001_GDB136.h.vcf"
 
-        hvcf_folder = args.hvcf_folder
-        hvcf_file = args.hvcf_file
+def main(pangenome_folder, imputed_hvcf):
 
-    else:
-        hvcf_folder = "/scratch/PHG/output/vcf_files/"
-        hvcf_file = "/scratch/PHG/output/ensambled_genomes/1740D-268-01_S1_L001_R1_001_GDB136.h.vcf"
+    if pangenome_folder == None or imputed_hvcf == None:
+        print ("Please provide the pangenome folder and the imputed hvcf file")
+        sys.exit(0)
 
-
-    
-
-
-    hvcf_files = list_pangenome_hvcfs(hvcf_folder)
+    hvcf_files = list_pangenome_hvcfs(pangenome_folder)
 
     #check_imputation(hvcf_files, hvcf_file)
 
-    plot_imputation(hvcf_files, hvcf_file)
+    plot_imputation(hvcf_files, imputed_hvcf)
+
+    print ("\nWork in progress: works with bp instead of number of ranges. Also to plot the results")
 
 
 

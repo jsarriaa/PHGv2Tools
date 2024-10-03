@@ -27,9 +27,9 @@ def AmIaNotebook():
 # In[31]:
 
 
-def NumberOfGenomes (hvcf_file):
+def NumberOfGenomes (pangenome_hvcf):
 
-    with open(hvcf_file, 'r') as hvcf:
+    with open(pangenome_hvcf, 'r') as hvcf:
         lines = hvcf.readlines()
         num_of_genomes = 0
         for line in lines:
@@ -52,15 +52,15 @@ def NumberOfGenomes (hvcf_file):
 # In[32]:
 
 
-def DetermineCoreRanges(hvcf_file):
+def DetermineCoreRanges(pangenome_hvcf):
 
-    num_of_genomes = NumberOfGenomes(hvcf_file)
+    num_of_genomes = NumberOfGenomes(pangenome_hvcf)
 
     genome_numbers = list(range(1, num_of_genomes + 1))
 
-    print(genome_numbers)
+    #print(genome_numbers)
 
-    with open(hvcf_file, 'r') as hvcf:
+    with open(pangenome_hvcf, 'r') as hvcf:
         lines = hvcf.readlines()
         total_ranges = 0
         core_ranges = 0
@@ -83,9 +83,9 @@ def DetermineCoreRanges(hvcf_file):
         print("\n")
         print("here you have the whole summary:\n ")
 
-    with open(hvcf_file, 'r') as hvcf:
+    with open(pangenome_hvcf, 'r') as hvcf:
         lines = hvcf.readlines()
-        accesion_count = 0
+        accessory_count = 0
         dict_ranges_count = {}
         for genome_number in genome_numbers:
             #print(f'Number of genomes: {genome_number}')
@@ -104,7 +104,7 @@ def DetermineCoreRanges(hvcf_file):
                         count += 1
 
             if genome_number is not 1 and genome_number is not num_of_genomes:
-                accesion_count += count
+                accessory_count += count
 
             dict_ranges_count[genome_number] = count
 
@@ -114,16 +114,16 @@ def DetermineCoreRanges(hvcf_file):
         print('\nTotal number of ranges: ', total_ranges)
         print('\nNumber of genomes: ', num_of_genomes)
         print('Number of core ranges: ', core_ranges)
-        print("Number of accesion genes are: ", accesion_count)
+        print("Number of accessory genes are: ", accessory_count)
         print('Number of unique ranges: ', unic_ranges)
 
-    #print("\nThe sum of core, unique and accesion ranges is:")
-    #print(core_ranges + unic_ranges + accesion_count)
+    #print("\nThe sum of core, unique and accessory ranges is:")
+    #print(core_ranges + unic_ranges + accessory_count)
     
-    if total_ranges != core_ranges + unic_ranges + accesion_count:
-        raise ValueError('The sum of core, unique and accesion ranges does not match the total number of ranges')
+    if total_ranges != core_ranges + unic_ranges + accessory_count:
+        raise ValueError('The sum of core, unique and accessory ranges does not match the total number of ranges')
 
-    return total_ranges, unic_ranges, core_ranges, accesion_count, dict_ranges_count
+    return total_ranges, unic_ranges, core_ranges, accessory_count, dict_ranges_count
 
 
 # In[33]:
@@ -131,23 +131,23 @@ def DetermineCoreRanges(hvcf_file):
 
 #lets plot it
 
-def plot_pangenome_ranges_intersection(hvcf_file):
+def plot_pangenome_ranges_intersection(pangenome_hvcf):
 
-    total_ranges, unic_ranges, core_ranges, accesion_count, dict_ranges_count = DetermineCoreRanges(hvcf_file)
-    num_of_genomes = NumberOfGenomes(hvcf_file)
+    total_ranges, unic_ranges, core_ranges, accessory_count, dict_ranges_count = DetermineCoreRanges(pangenome_hvcf)
+    num_of_genomes = NumberOfGenomes(pangenome_hvcf)
 
-    labels = 'Core', 'Unique', 'Accesion'
-    sizes = [core_ranges, unic_ranges, accesion_count]
+    labels = 'Core', 'Unique', 'accessory'
+    sizes = [core_ranges, unic_ranges, accessory_count]
     colors = ['gold', 'yellowgreen', 'lightcoral']
     explode = (0.1, 0, 0)  # explode 1st slice
 
     plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', shadow=True, startangle=140)
 
     plt.axis('equal')
-    plt.savefig(f'{hvcf_file}_1.png')
+    plt.savefig(f'{pangenome_hvcf}_1.png')
     plt.show()
 
-    #get a subplot for accesion genes
+    #get a subplot for accessory genes
 
     fig, ax = plt.subplots()
     ax.bar(dict_ranges_count.keys(), dict_ranges_count.values())
@@ -162,9 +162,9 @@ def plot_pangenome_ranges_intersection(hvcf_file):
     ax.set_xticks(list(dict_ranges_count.keys()))
     ax.set_xticklabels(list(dict_ranges_count.keys()))
 
-    plt.savefig(f'{hvcf_file}_2.png')
+    plt.savefig(f'{pangenome_hvcf}_2.png')
     plt.show()
-    print(f'The plot has been saved as a png file as {hvcf_file}_1.png and {hvcf_file}_2.png')
+    print(f'The plot has been saved as a png file as {pangenome_hvcf}_1.png and {pangenome_hvcf}_2.png')
 
 
 # In[34]:
@@ -175,18 +175,12 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 
-def main():
-    if AmIaNotebook() == False:
-        parser = argparse.ArgumentParser(description=main.__doc__)
-        parser.add_argument('--pangenome-hvcf', '-hvcf', help='Input hvcf file', required=True)
-        args = parser.parse_args()
+if AmIaNotebook() == True:
+    pangenome_hvcf = "/scratch/PHG/output/vcf_files/pan.hvcf"
 
-        hvcf_file = args.pangenome_hvcf
+def main(pangenome_hvcf):
 
-    else:
-        hvcf_file = "/scratch/PHG/output/vcf_files/merged_hvcfs_19092024.h.vcf"
-
-    plot_pangenome_ranges_intersection(hvcf_file)
+    plot_pangenome_ranges_intersection(pangenome_hvcf)
 
 
 # In[35]:
