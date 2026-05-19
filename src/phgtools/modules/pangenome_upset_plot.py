@@ -39,10 +39,18 @@ def parse_arguments(argv=None):
         default="pangenome_upset.png",
         help="Output image filename (default: pangenome_upset.png)."
     )
+    parser.add_argument(
+        "--verb",
+        action="store_true",
+        help="Print progress messages to the terminal in real time."
+    )
     return parser.parse_args(argv)
 
 
-def process_data(file_path, mode):
+def process_data(file_path, mode, verbose=False):
+    if verbose:
+        print(f"Reading input file: {file_path}")
+
     # Read file, tolerate occasional header typos where two names are squashed
     with open(file_path, 'r') as f:
         lines = f.readlines()
@@ -51,6 +59,8 @@ def process_data(file_path, mode):
         sys.exit("Error: File is empty.")
 
     if "HOR_3365HOR_3474" in lines[0]:
+        if verbose:
+            print("Patching header typo: HOR_3365HOR_3474")
         lines[0] = lines[0].replace("HOR_3365HOR_3474", "HOR_3365    HOR_3474")
 
     import io
@@ -58,6 +68,9 @@ def process_data(file_path, mode):
 
     metadata_cols = ['#CHROM', 'START', 'END']
     genome_cols = [c for c in df.columns if c not in metadata_cols]
+
+    if verbose:
+        print(f"Found {len(genome_cols)} genomes and {len(df)} ranges")
 
     df['LENGTH'] = df['END'] - df['START']
 
@@ -79,11 +92,15 @@ def process_data(file_path, mode):
         for g in row['members']:
             set_sizes[g] += row['count']
 
+    if verbose:
+        print(f"Parsed {len(intersection_groups)} intersection groups")
     return intersection_groups, set_sizes, genome_cols
 
 
-def plot_upset(intersection_groups, set_sizes, genome_cols, top_n, output_img, mode):
+def plot_upset(intersection_groups, set_sizes, genome_cols, top_n, output_img, mode, verbose=False):
     top_intersections = intersection_groups.head(top_n)
+    if verbose:
+        print(f"Generating plot for top {len(top_intersections)} intersections")
     sorted_genomes = sorted(genome_cols, key=lambda x: set_sizes[x], reverse=False)
     n_sets = len(sorted_genomes)
 
@@ -167,6 +184,8 @@ def plot_upset(intersection_groups, set_sizes, genome_cols, top_n, output_img, m
         ax_matrix.spines[spine].set_visible(False)
 
     plt.tight_layout()
+    if verbose:
+        print(f"Saving plot to: {output_img}")
     plt.savefig(output_img, dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -175,8 +194,8 @@ def main(argv=None):
     args = parse_arguments(argv)
     if not os.path.exists(args.input_file):
         sys.exit(f"Error: File '{args.input_file}' not found.")
-    intersections, sizes, genomes = process_data(args.input_file, args.mode)
-    plot_upset(intersections, sizes, genomes, args.top, args.out, args.mode)
+    intersections, sizes, genomes = process_data(args.input_file, args.mode, verbose=args.verb)
+    plot_upset(intersections, sizes, genomes, args.top, args.out, args.mode, verbose=args.verb)
 
 
 if __name__ == '__main__':

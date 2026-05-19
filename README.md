@@ -201,21 +201,17 @@ Generate an UpSet plot summarizing exact haplotype-hash intersections across gen
 | `--mode` | No | `blocks` (count) or `bp` (base pairs). Default: `blocks` |
 | `--top` | No | Number of top intersections to display (default: 30) |
 | `--out` | No | Output PNG filename (default: `pangenome_upset.png`) |
+| `--verb` | No | Print progress messages to the terminal in real time. |
 
 **Examples:**
 ```bash
-# Generate default upset plot (top 30 intersections)
-phgtools upset-plot output/hapIDranges.tsv --out upset.png
-
-# Use base pairs as metric and show top 50 intersections
-phgtools upset-plot output/hapIDranges.tsv --mode bp --top 50 --out upset_bp.png
+# Generate default upset plot (top 30 intersections) and print progress
+phgtools upset-plot output/hapIDranges.tsv --out upset.png --verb
 ```
 
 **Example output:**
 
 ![UpSet plot example (blocks)](Misc/Images/upset_blocks_example.png)
-
-![UpSet plot example (bp)](Misc/Images/upset_bp_example.png)
 
 ---
 
