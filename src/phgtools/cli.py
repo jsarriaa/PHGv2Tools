@@ -22,6 +22,8 @@ from phgtools.modules import checkImputatedHaplotype
 from phgtools.modules import plotImputedHvcf
 from phgtools.modules import vcfDistance
 from phgtools.modules import checkSetup
+from phgtools.modules import manageHbedInversions
+from phgtools.modules import pangenome_upset_plot
 
 # --- CONFIGURATION: EDIT THIS TO CHANGE THE HELP MENU ---
 COMMAND_MAP = {
@@ -74,6 +76,16 @@ COMMAND_MAP = {
         "module": vcfDistance,
         "help": "Generate distance matrix comparing all varieties in a g.VCF file with optional heatmap visualization.",
         "usage": "phgtools vcf-distance <input.vcf.gz> [-o <out_matrix.tsv>] [-p [heatmap.pdf]] [-t <threads>] [-v]"
+    },
+    "upset-plot": {
+        "module": pangenome_upset_plot,
+        "help": "Generate an UpSet plot from a hapIDranges.tsv pangenome file.",
+        "usage": "phgtools upset-plot <hapIDranges.tsv> [--mode blocks|bp] [--top N] [--out file.png]"
+    },
+    "manage-hbed-inversions": {
+        "module": manageHbedInversions,
+        "help": "Extract, collapse, summarize, and plot inversion blocks from h.bed files.",
+        "usage": "phgtools manage-hbed-inversions <input.h.bed> <output.h.bed> [--max-gap N] [--summary-file [path]] [--plot-file [path]]"
     },
     #
 }

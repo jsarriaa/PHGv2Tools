@@ -76,6 +76,7 @@ Run `phgtools --check-setup` to verify all dependencies are properly installed.
 | `check-imputated-haplotype` | Check genomic content contribution of source genomes to an imputed haplotype |
 | `plot-imputed-hvcf` | Plot imputed hVCF files showing genome-colored haplotype ranges |
 | `vcf-distance` | Generate distance matrix comparing all varieties in a g.VCF file with heatmap |
+| `manage-hbed-inversions` | Collapse inversion blocks from h.bed files with summary and optional plot |
 
 Run `phgtools <command> --help` for detailed usage of each command.
 
@@ -100,6 +101,31 @@ phgtools hvcf2bed /path/to/vcf/folder
 
 # With verbose output
 phgtools hvcf2bed /path/to/vcf/folder -v
+```
+
+---
+
+### manage-hbed-inversions
+Process inversion blocks from a `.h.bed` file. Keeps only `-` strand blocks, collapses concatenated blocks, prints a summary, and can save summary + plot outputs.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `input_hbed` | Yes | Input h.bed file |
+| `output_hbed` | Yes | Output collapsed inversion h.bed file |
+| `--max-gap` | No | Maximum allowed bp gap to still merge consecutive inversion blocks (default: 0) |
+| `--summary-file [path]` | No | Save summary text; if no path is provided, writes `<output_hbed>.summary.txt` |
+| `--plot-file [path]` | No | Save haplopaint-style inversion PNG; if no path is provided, writes `<output_hbed>.png` |
+
+**Examples:**
+```bash
+# Basic inversion collapse
+phgtools manage-hbed-inversions sample.h.bed sample.inversions.collapsed.h.bed
+
+# Save summary + plot using auto filenames
+phgtools manage-hbed-inversions sample.h.bed sample.inversions.collapsed.h.bed --summary-file --plot-file
+
+# Merge inversions allowing up to 1000 bp gap
+phgtools manage-hbed-inversions sample.h.bed sample.inversions.collapsed.h.bed --max-gap 1000
 ```
 
 ---

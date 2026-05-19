@@ -1,6 +1,11 @@
 # Changelog
 
-## [2.0.0] - 22-12-2025
+## [2.1.0] - 19-05-2026
+### Added
+- **CLI:** `upset-plot` command to generate UpSet plots from `hapIDranges.tsv` files (saved with `--out`).
+
+
+## [2.0.0] - 19-01-2026
 ### Added
 - Created `CHANGELOG.md` to track version history.
 - **Core CLI:** `phgtools` now uses `cli.py` with argument parsing and rich UI.
@@ -10,6 +15,7 @@
 - **Module:** Added `hvcf2bed` for converting hVCF files to BED format.
 - **Module:** Added `haplopainting` for visualizing haplotype blocks.
 - **Module:** Added `vcf-distance` for calculating and plotting distance matrices (uses g.vcf files, outputs matrix + clustered heatmap with dendrogram).
+- **Module:** Added `manage-hbed-inversions` for extracting, collapsing, summarizing, and plotting inversion blocks from `.h.bed` files.
 
 ### Changed
 - Refactored all scripts to use `src` layout structure.
@@ -19,6 +25,7 @@
 - **Module:** `check-setup` - updated to check only required dependencies (removed phg, bcftools, agc, anchorwave, tiledb, perl, pygenometracks).
 - **Dependencies:** Added `seaborn` to requirements. Removed `pygenometracks` dependency.
 - **README:** Complete rewrite with updated documentation for all modules.
+- **EXAMPLE DATABASE:** New example database with documentation along all pipeline, creating a PHG database from scratch and to take advantage of the phgtools.
 
 ### Removed
 - **Module:** `plot-pangenome-chromosomes` - functionality replaced by `haplopainting`.

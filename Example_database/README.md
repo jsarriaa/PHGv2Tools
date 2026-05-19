@@ -84,19 +84,145 @@ Prepare the assemblies list to compress (`data/prepared_assemblies/assemblies_li
 data/prepared_assemblies/Bla-1.fa
 data/prepared_assemblies/Col-0.fa
 data/prepared_assemblies/Cvi-0.fa
+data/prepared_assemblies/Ita-0.fa
+```
+
+
+## 5. Compress FASTA Files
+
+```bash
+phg agc-compress --db-path vcf_dbs/ --fasta-list data/prepared_assemblies/assemblies_list.txt --reference-file data/prepared_assemblies/Col-0.fa 
+```
+
+
+## 6. Align Assemblies
+
+**By PHG:**
+
 Example `output/alignment_files/assemblies_align_keyfile.txt`:
-## 13. PHGtools Functions
+```
+data/prepared_assemblies/Bla-1.fa
+data/prepared_assemblies/Cvi-0.fa
+data/prepared_assemblies/Ita-0.fa
+```
 
-### 13.1 Painting and Visualization
+```bash
+phg align-assemblies --gff data/Col0.gff --reference-file data/prepared_assemblies/Col-0.fa --assembly-file-list output/alignment_files/assemblies_align_keyfile.txt -o output/alignment_files/ --total-threads 16 --in-parallel 2
+```
 
-#### Haplopainting
+
+**Manual (using AnchorWave and minimap2):**
+
+```bash
+anchorwave gff2seq -r data/Col0.fa -i data/Col0.gff -o output/alignment_files/ref.cds.fasta
+minimap2 -x splice -t 8 -k 12 -a -p 0.4 -N 20 \
+  data/prepared_assemblies/Query.fa \
+  output/alignment_files/ref.cds.fasta \
+  > output/alignment_files/refCDS_to_Query.sam
+anchorwave proali \
+  -i data/Col0.gff \
+  -r data/prepared_assemblies/Col-0.fa \
+  -as output/alignment_files/ref.cds.fasta \
+  -a output/alignment_files/refCDS_to_Query.sam \
+  -s data/prepared_assemblies/Query.fa \
+  -n output/alignment_files/Query.proali.anchors \
+  -o output/alignment_files/Query.maf \
+  -t 8 \
+  -R 1 -Q 1
+```
+*Note: Try AnchorWave's geonali mode if you are focused on inversions.*
+
+
+## 7. Create Reference VCF
+
+```bash
+phg create-ref-vcf --bed output/ref_ranges.bed --reference-file data/prepared_assemblies/Col-0.fa --reference-name Col-0 --db-path vcf_dbs/
+```
+
+
+## 8. Create Pangenome VCFs
+
+```bash
+phg create-maf-vcf --bed output/ref_ranges.bed --reference-file data/prepared_assemblies/Col-0.fa --maf-dir output/alignment_files/ -o output/vcf_files --skip-metrics --db-path vcf_dbs/
+phg load-vcf --vcf-dir output/vcf_files/ --db-path vcf_dbs/
+```
+
+
+## 9. Create a Samples List
+
+```bash
+phg list-samples --db-path vcf_dbs/ --data-set hvcf --output-file vcf_dbs/samples_names.txt
+```
+
+
+## 10. Create Utility Tables
+
+```bash
+phg hapid-sample-table --output-file output/hapIDsample.tsv --hvcf-dir vcf_dbs/hvcf_files/
+phg sample-hapid-by-range --input-dir vcf_dbs/hvcf_files/ --output-file output/hapIDrange.tsv
+```
+
+
+## 11. Pangenome Merging Files
+
+```bash
+phg merge-hvcfs --input-dir vcf_dbs/hvcf_files/ --id-format CHECKSUM --reference-file data/prepared_assemblies/Col-0.fa --output-file output/example_pangenome.h.vcf --range-bedfile output/ref_ranges.bed
+phg merge-gvcfs --input-dir output/vcf_files/ --output-file output/example_pangenome.g.vcf
+```
+
+
+## 12. Imputation
+
+### Create the index
+```bash
+phg rope-bwt-index --db-path vcf_dbs/ --hvcf-dir output/vcf_files/ --output-dir output/index_files --index-file-prefix example_database
+```
+
+### Generating random data for imputation:
+```bash
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/735/GCA_000001735.1_TAIR10/GCA_000001735.1_TAIR10_genomic.fna.gz
+gunzip GCA_000001735.1_TAIR10_genomic.fna.gz
+mv GCA_000001735.1_TAIR10_genomic.fna data/imputation_rawdata/Ler0.fa
+samtools faidx data/imputation_rawdata/Ler0.fa
+samtools faidx data/imputation_rawdata/Ler0.fa CP002684.1 CP002685.1 > data/imputation_rawdata/Ler0_Chr1_Chr2.fa
+sed -i 's/>CP002684.1.*/>chr1/' data/imputation_rawdata/Ler0_Chr1_Chr2.fa
+sed -i 's/>CP002685.1.*/>chr2/' data/imputation_rawdata/Ler0_Chr1_Chr2.fa
+# Ensure ART is installed
+# conda install -c bioconda art
+art_illumina \
+  -ss HS25 \
+  -i data/imputation_rawdata/Ler0_Chr1_Chr2.fa \
+  -p \
+  -l 150 \
+  -f 5 \
+  -m 500 \
+  -s 10 \
+  -o data/imputation_rawdata/simulated_Ler0_
+```
+
+
+```bash
+phg rope-bwt-index --db-path vcf_dbs/ --hvcf-dir output/vcf_files/ --output-dir output/index_files --index-file-prefix example_database
+phg map-reads --index output/index_files/example_database.fmd --read-files data/imputation_rawdata/simulated_Ler0_1.fq,data/imputation_rawdata/simulated_Ler0_2.fq -o output/read_mappings --hvcf-dir output/vcf_files/ --threads 8
+phg find-paths --path-keyfile output/read_mappings/pathKeyFile.txt --hvcf-dir output/vcf_files/ --reference-genome data/prepared_assemblies/Col-0.fa --output-dir output/vcf_files_imputed/ --path-type haploid --threads 8
+```
+
+## 13. PHGtools Utilities
+
+### hvcf2bed
+```bash
+phgtools hvcf2bed output/vcf_files/
+phgtools hvcf2bed output/vcf_files_imputed/
+```
+*Generates a bedfile representing the haplotype blocks.*
+
+### Haplopainting
 ```bash
 cp output/vcf_files_imputed/simulated_Ler0_1.h.vcf output/haplopainting/
 phg export-vcf --db-path vcf_dbs/ --dataset-type hvcf --sample-file vcf_dbs/samples_names.txt -o output/haplopainting/
 # or:
 phg export-vcf --db-path vcf_dbs/ --dataset-type hvcf --sample-names Bla-1,Col-0,Cvi-0,Ita-0 -o output/haplopainting/
 zcat vcf_dbs/hvcf_files/Col-0.h.vcf.gz > output/haplopainting/Col-0.h.vcf
-phgtools haplopainting --hvcf-folder output/haplopainting/ --samples-list output/haplopainting/samples_list_keyfile.txt  --plot-pangenome-references --verb
 ```
 
 Example `output/haplopainting/samples_list_keyfile.txt`:
@@ -108,78 +234,6 @@ Sort	Genotype	Group
 4	Ita-0	Pangenome
 5	Ler0_1	Imputed
 ```
-
-**Example Plots:**
-![chr1 haplotype painting](output/haplopainting/plots/chr1_FULL_haplotype_painting.png)
-![chr2 haplotype painting](output/haplopainting/plots/chr2_FULL_haplotype_painting.png)
-
-### 13.2 Analysis and Statistics
-
-#### Range Pangenome Evolution
-```bash
-phgtools range-pangenome-evolution output/hapIDrange.tsv --reference Col-0
-```
-...existing code...
-Plots:
-![Ranges Amplification Slope](output/RangesAmplificationSlope_from_TSV.png)
-![Ranges Variation Slope](output/RangesVariationSlope_from_TSV.png)
-
-#### Genome Intersection
-```bash
-phgtools genome-intersection --bed-file output/haplopainting/Ita-0.h.bed --genome-fasta data/prepared_assemblies/Ita-0.fa output/read_mappings/simulated_Ler0_1_1_readMapping.txt
-```
-...existing code...
-
-#### Core Range Detector
-```bash
-phgtools core-range-detector output/example_pangenome.h.vcf
-```
-...existing code...
-Plot:
-![Core Range Analysis](output/example_pangenome_analysis.png)
-
-#### Imputation Match Summary
-```bash
-phgtools check-imputated-haplotype vcf_dbs/hvcf_files/ output/vcf_files_imputed/simulated_Ler0_1.h.vcf
-```
-...existing code...
-Plot:
-![Imputation Match Percentage](imputation_match_percentage.png)
-
-#### Plot Imputed HVCF
-```bash
-phgtools plot-imputed-hvcf vcf_dbs/hvcf_files/ output/vcf_files_imputed/simulated_Ler0_1.h.vcf vcf_dbs/hvcf_files/Col-0.h.vcf.gz
-```
-Plot:
-![Simulated Ler0_1](vcf_dbs/hvcf_files/plots/simulated_Ler0_1.png)
-
-#### VCF Distance
-```bash
-phgtools vcf-distance output/example_pangenome.g.vcf --out-matrix output/distance_matrix.tsv --heatmap-plot output/distance_heatmap.png --threads 8
-```
-Plot:
-![Distance Heatmap](output/distance_heatmap.png)
-
-### 13.3 Utility and Conversion
-
-#### hvcf2bed
-```bash
-phgtools hvcf2bed output/vcf_files/
-phgtools hvcf2bed output/vcf_files_imputed/
-```
-*Generates a bedfile representing the haplotype blocks.*
-
-#### fasta-from-key
-```bash
-phgtools fasta-from-key --key 9b124928bfffebe27777ac72444a6de0 --fastas-folder data/prepared_assemblies/ --vcf-folder output/vcf_files/
-```
-...existing code...
-
-#### Check Haplotype Alleles
-```bash
-phgtools check-haplotype-alleles output/hapIDrange.tsv  -s 1 -e 10000 -c chr1
-```
-...existing code...
 
 ```bash
 phgtools haplopainting --hvcf-folder output/haplopainting/ --samples-list output/haplopainting/samples_list_keyfile.txt  --plot-pangenome-references --verb
