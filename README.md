@@ -211,6 +211,12 @@ phgtools upset-plot output/hapIDranges.tsv --out upset.png
 phgtools upset-plot output/hapIDranges.tsv --mode bp --top 50 --out upset_bp.png
 ```
 
+**Example output:**
+
+![UpSet plot example (blocks)](Misc/Images/upset_blocks_example.png)
+
+![UpSet plot example (bp)](Misc/Images/upset_bp_example.png)
+
 ---
 
 ### check-haplotype-alleles
