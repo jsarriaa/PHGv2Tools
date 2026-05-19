@@ -71,6 +71,7 @@ Run `phgtools --check-setup` to verify all dependencies are properly installed.
 | `fasta-from-key` | Extract FASTA sequence from a PHGv2 key/hash |
 | `range-pangenome-evolution` | Analyze pangenome evolution: cumulative growth of ranges and unique haplotype keys |
 | `genome-intersection` | Analyze genome intersection from map_kmers output and BED file |
+| `upset-plot` | Generate UpSet plot from a `hapIDranges.tsv` pangenome file |
 | `core-range-detector` | Detect and analyze core, unique, and accessory ranges from pangenome hVCF |
 | `check-haplotype-alleles` | Query a pangenome hapIDranges.tsv for overlapping genomic ranges |
 | `check-imputated-haplotype` | Check genomic content contribution of source genomes to an imputed haplotype |
@@ -187,6 +188,27 @@ Analyze how the pangenome grows as genomes are added. Plots cumulative range acq
 ```bash
 phgtools range-pangenome-evolution output/hapIDranges.tsv
 phgtools range-pangenome-evolution output/hapIDranges.tsv -r MorexV3 -v
+```
+
+---
+
+### upset-plot
+Generate an UpSet plot summarizing exact haplotype-hash intersections across genomes from a `hapIDranges.tsv` file.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `hapid_ranges_file` | Yes | Path to the `hapIDranges.tsv` (or .tsv.gz) file |
+| `--mode` | No | `blocks` (count) or `bp` (base pairs). Default: `blocks` |
+| `--top` | No | Number of top intersections to display (default: 30) |
+| `--out` | No | Output PNG filename (default: `pangenome_upset.png`) |
+
+**Examples:**
+```bash
+# Generate default upset plot (top 30 intersections)
+phgtools upset-plot output/hapIDranges.tsv --out upset.png
+
+# Use base pairs as metric and show top 50 intersections
+phgtools upset-plot output/hapIDranges.tsv --mode bp --top 50 --out upset_bp.png
 ```
 
 ---
