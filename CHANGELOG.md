@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.1] - 20-05-2026
+### Changed
+- **Module:** `haplopainting` now supports output plot formats `png`, `pdf`, and `svg` via `-f/--format`.
+- **Module:** `core-range-detector`  fixed bug
 ## [2.1.0] - 19-05-2026
 ### Added
 - **CLI:** `upset-plot` command to generate UpSet plots from `hapIDranges.tsv`.
