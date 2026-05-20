@@ -233,7 +233,7 @@ def PrintCoreRangesStats(hvcf_input,figformat):
 
 
 def GenerateVisualizations(dict_ranges_count, core_ranges, unique_ranges, accessory_count, 
-                           total_ranges, num_of_genomes, hvcf_input, figformat='png')
+                           total_ranges, num_of_genomes, hvcf_input, figformat='png'):
     """
     Generate bar plot and pie chart visualizations for range analysis.
     
