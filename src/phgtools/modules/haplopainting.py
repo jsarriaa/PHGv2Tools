@@ -191,12 +191,14 @@ def generate_df(bed_files, hapID_color_map, genotype_group_sort_hash, hvcfs_fold
             header_skipped = False
             for line in f:
                 if line.startswith('#'): continue
-                if not header_skipped:
+                parts = line.strip().split('\t')
+                if len(parts) != 10:
+                    continue
+                # Skip a non-comment header line if it exists
+                if not header_skipped and parts[0].lower() == 'chrom':
                     header_skipped = True
                     continue
-                
-                parts = line.strip().split('\t')
-                if len(parts) != 10: continue
+                header_skipped = True
                 
                 chrom = parts[6]
                 ref_start = int(parts[7])

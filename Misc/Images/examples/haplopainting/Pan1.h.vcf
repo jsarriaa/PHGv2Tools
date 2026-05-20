@@ -1,0 +1,4 @@
+##fileformat=VCFv4.2
+##ALT=<ID=phash,SampleName=Pan1,Regions=chr1:100-180,Checksum=phash,RefChecksum=refphash,RefRange=chr1:1000-1080>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	N	<phash>	.	.	.

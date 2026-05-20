@@ -1,0 +1,4 @@
+Genotype	chr	ref_start	ref_end	donor_genome	color
+Ref	chr1	1000	1080	Ref	#000000
+Pan1	chr1	1000	1080	Pan1	#e41a1c
+Imp1	chr1	1000	1080	Imp1	#CCCCCC

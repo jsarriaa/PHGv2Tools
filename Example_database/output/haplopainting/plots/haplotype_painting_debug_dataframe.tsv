@@ -1,4 +1,5 @@
 Genotype	chr	ref_start	ref_end	donor_genome	color
+Col-0	chr1	1	3630	Col-0	#000000
 Col-0	chr1	3631	5899	Col-0	#000000
 Col-0	chr1	5900	6787	Col-0	#000000
 Col-0	chr1	6788	9130	Col-0	#000000
@@ -354,6 +355,7 @@ Col-0	chr2	489942	492058	Col-0	#000000
 Col-0	chr2	492059	494744	Col-0	#000000
 Col-0	chr2	494745	497860	Col-0	#000000
 Col-0	chr2	497861	500000	Col-0	#000000
+Bla-1	chr1	3631	5899	Bla-1	#e41a1c
 Bla-1	chr1	5900	6787	Bla-1	#e41a1c
 Bla-1	chr1	6788	9130	Bla-1	#e41a1c
 Bla-1	chr1	9131	11648	Bla-1	#e41a1c
@@ -666,6 +668,7 @@ Bla-1	chr2	489942	492058	Bla-1	#e41a1c
 Bla-1	chr2	492059	494744	Bla-1	#e41a1c
 Bla-1	chr2	494745	497860	Bla-1	#e41a1c
 Bla-1	chr2	497861	500000	Bla-1	#e41a1c
+Cvi-0	chr1	11649	13714	Cvi-0	#377eb8
 Cvi-0	chr1	13715	23120	Cvi-0	#377eb8
 Cvi-0	chr1	23121	33171	Cvi-0	#377eb8
 Cvi-0	chr1	33172	37871	Cvi-0	#377eb8
@@ -968,6 +971,7 @@ Cvi-0	chr2	489942	492058	Cvi-0	#377eb8
 Cvi-0	chr2	492059	494744	Cvi-0	#377eb8
 Cvi-0	chr2	494745	497860	Cvi-0	#377eb8
 Cvi-0	chr2	497861	500000	Cvi-0	#377eb8
+Ita-0	chr1	3631	5899	Ita-0	#4daf4a
 Ita-0	chr1	5900	6787	Ita-0	#4daf4a
 Ita-0	chr1	6788	9130	Ita-0	#4daf4a
 Ita-0	chr1	9131	11648	Ita-0	#4daf4a
@@ -1277,6 +1281,7 @@ Ita-0	chr2	489942	492058	Ita-0	#4daf4a
 Ita-0	chr2	492059	494744	Ita-0	#4daf4a
 Ita-0	chr2	494745	497860	Ita-0	#4daf4a
 Ita-0	chr2	497861	500000	Ita-0	#4daf4a
+Ler0_1	chr1	3631	5899	Ita-0	#4daf4a
 Ler0_1	chr1	5900	6787	Ita-0	#4daf4a
 Ler0_1	chr1	6788	9130	Ita-0	#4daf4a
 Ler0_1	chr1	9131	11648	Ita-0	#4daf4a

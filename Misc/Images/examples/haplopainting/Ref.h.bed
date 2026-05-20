@@ -1,0 +1,2 @@
+#chrom	start	end	strand	checksum	genome	ref_chr	ref_start	ref_end	ref_checksum
+chr1	100	180	+	rhash	Ref	chr1	1000	1080	refrhash

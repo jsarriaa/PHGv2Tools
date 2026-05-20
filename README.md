@@ -104,6 +104,10 @@ phgtools hvcf2bed /path/to/vcf/folder
 phgtools hvcf2bed /path/to/vcf/folder -v
 ```
 
+**Example output:**
+
+![hVCF to BED example](Misc/Images/hvcf2bed_example.png)
+
 ---
 
 ### manage-hbed-inversions
@@ -128,6 +132,10 @@ phgtools manage-hbed-inversions sample.h.bed sample.inversions.collapsed.h.bed -
 # Merge inversions allowing up to 1000 bp gap
 phgtools manage-hbed-inversions sample.h.bed sample.inversions.collapsed.h.bed --max-gap 1000
 ```
+
+**Example output:**
+
+![Collapsed h.bed inversion plot](Misc/Images/manage_hbed_inversions_example.png)
 
 ---
 
@@ -163,6 +171,7 @@ Analyze core, accessory and unique ranges from a merged pangenome h.VCF file. De
 | Argument | Required | Description |
 |----------|----------|-------------|
 | `HVCF_FILE` | Yes | Path to merged pangenome hVCF file (.h.vcf or .h.vcf.gz) |
+| `-f, --format` | No | Output plot format (`png`, `pdf`, `svg`). Default: `png` |
 | `-v, --verbose` | No | Enable verbose output |
 
 **Output:** Bar plot of range distribution and pie chart of core/accessory/unique percentages.
@@ -170,8 +179,13 @@ Analyze core, accessory and unique ranges from a merged pangenome h.VCF file. De
 **Examples:**
 ```bash
 phgtools core-range-detector output/MergedLinesA_B_C.h.vcf
-phgtools core-range-detector output/MergedLinesA_B_C.h.vcf -v
+phgtools core-range-detector output/MergedLinesA_B_C.h.vcf -f svg
+phgtools core-range-detector output/MergedLinesA_B_C.h.vcf -f pdf -v
 ```
+
+**Example output:**
+
+![Core range detector example](Misc/Images/core_range_detector_example.png)
 
 ---
 
@@ -189,6 +203,14 @@ Analyze how the pangenome grows as genomes are added. Plots cumulative range acq
 phgtools range-pangenome-evolution output/hapIDranges.tsv
 phgtools range-pangenome-evolution output/hapIDranges.tsv -r MorexV3 -v
 ```
+
+**Example output:**
+
+![Pangenome evolution example](Misc/Images/range_pangenome_evolution_example.png)
+
+**Example legend output:**
+
+![Pangenome evolution keys example](Misc/Images/range_pangenome_evolution_keys_example.png)
 
 ---
 
@@ -253,6 +275,10 @@ phgtools check-imputated-haplotype output/vcf_files/ imputed/sample.h.vcf -v
 phgtools check-imputated-haplotype output/vcf_files/ imputed/sample.h.vcf -o results/ -v
 ```
 
+**Example output:**
+
+![Imputation match example](Misc/Images/check_imputated_haplotype_example.png)
+
 ---
 
 ### plot-imputed-hvcf
@@ -271,6 +297,10 @@ Plot imputed hVCF files showing genome-colored haplotype ranges across all chrom
 phgtools plot-imputed-hvcf output/vcf_files/ imputed/sample.h.vcf reference/Ref.h.vcf.gz
 phgtools plot-imputed-hvcf output/vcf_files/ imputed/sample.h.vcf reference/Ref.h.vcf.gz -o plots/ -v
 ```
+
+**Example output:**
+
+![Imputed hVCF plot example](Misc/Images/plot_imputed_hvcf_example.png)
 
 ---
 
@@ -351,6 +381,10 @@ phgtools vcf-distance pangenome.g.vcf.gz -t 8 -p -v
 # Use all available CPU cores
 phgtools vcf-distance pangenome.g.vcf.gz -t -1 -p -v
 ```
+
+**Example output:**
+
+![VCF distance heatmap example](Misc/Images/vcf_distance_example.png)
 
 ---
 

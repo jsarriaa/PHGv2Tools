@@ -1,0 +1,6 @@
+##fileformat=VCFv4.2
+##ALT=<ID=hashR,SampleName=Ref,RefRange=chr1:100-180>
+##ALT=<ID=hashP,SampleName=Pan1,RefRange=chr1:180-260>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	N	<hashR>	.	.	.
+chr1	180	.	N	<hashP>	.	.	.

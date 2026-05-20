@@ -1,0 +1,5 @@
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1	S2	S3
+chr1	100	.	N	A	.	.	.	GT	0	0	1
+chr1	200	.	G	T	.	.	.	GT	0	1	1
+chr1	300	.	C	A	.	.	.	GT	1	1	0

@@ -1,0 +1,6 @@
+##fileformat=VCFv4.2
+##ALT=<ID=hash1,SampleName=S1,Regions=chr1:100-200,Checksum=hash1,RefChecksum=refhash1,RefRange=chr1:1000-1100>
+##ALT=<ID=hash3,SampleName=Imp,Regions=chr1:200-300,Checksum=hash3,RefChecksum=refhash3,RefRange=chr1:1100-1200>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	N	<hash1>	.	.	.
+chr1	200	.	N	<hash3>	.	.	.

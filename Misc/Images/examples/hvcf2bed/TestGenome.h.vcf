@@ -1,0 +1,6 @@
+##fileformat=VCFv4.2
+##ALT=<ID=hash1,SampleName=TestGenome,Regions=chr1:1000-1100,Checksum=hash1,RefChecksum=refhash1,RefRange=chr1:2000-2100>
+##ALT=<ID=hash2,SampleName=TestGenome,Regions=chr1:1100-1200,Checksum=hash2,RefChecksum=refhash2,RefRange=chr1:2100-2200>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	1000	.	N	<hash1>	.	.	.
+chr1	1100	.	N	<hash2>	.	.	.

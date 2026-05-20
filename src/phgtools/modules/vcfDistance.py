@@ -288,8 +288,15 @@ def plot_heatmap(distfile, plotfile, verbose=False):
         fig_width = max(10, n_samples * cell_size + 2)  # Extra space for dendrogram
         fig_height = max(8, n_samples * cell_size)
         
-        # Create custom annotation array - empty string for diagonal
-        annot_labels = df_dist.applymap(lambda x: f'{x:.2f}')
+        # Create custom annotation array - empty string for diagonal.
+        # Use a fallback if DataFrame.applymap is unavailable for this pandas version.
+        if hasattr(df_dist, 'applymap'):
+            annot_labels = df_dist.applymap(lambda x: f'{x:.2f}')
+        else:
+            annot_labels = df_dist.copy().astype(object)
+            for i in range(len(df_dist)):
+                for j, col in enumerate(df_dist.columns):
+                    annot_labels.iloc[i, j] = f'{df_dist.iloc[i, j]:.2f}'
         for i in range(len(df_dist)):
             annot_labels.iloc[i, i] = ''  # No text on diagonal
         

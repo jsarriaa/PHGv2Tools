@@ -2,8 +2,11 @@
 
 ## [2.1.0] - 19-05-2026
 ### Added
-- **CLI:** `upset-plot` command to generate UpSet plots from `hapIDranges.tsv` files (saved with `--out`).
+- **CLI:** `upset-plot` command to generate UpSet plots from `hapIDranges.tsv`.
+- **Module:** `core-range-detector` now supports output plot formats `png`, `pdf`, and `svg` via `-f/--format`.
 
+### Changed
+- **README:** improved documentation and updated example images for plotting and analysis commands.
 
 ## [2.0.0] - 19-01-2026
 ### Added

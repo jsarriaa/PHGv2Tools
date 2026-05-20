@@ -1,0 +1,4 @@
+##fileformat=VCFv4.2
+##ALT=<ID=rhash,SampleName=Ref,Regions=chr1:100-180,Checksum=rhash,RefChecksum=refrhash,RefRange=chr1:1000-1080>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	N	<rhash>	.	.	.

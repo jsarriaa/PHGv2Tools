@@ -1,0 +1,3 @@
+#chrom	start	end	strand	checksum	genome	ref_chr	ref_start	ref_end	ref_checksum
+chr1	100	300	-	collapsed_1_n2	Gen1	chr1	100	300	collapsed_1_n2
+chr1	500	600	-	collapsed_2_n1	Gen1	chr1	500	600	collapsed_2_n1
