@@ -227,13 +227,13 @@ def PrintCoreRangesStats(hvcf_input,figformat):
         print(f"Ranges present in {genome_number:>2d} genome(s): {count:>8d} ({percentage:>6.2f}%){range_type}")
     print("-" * 70 + "\n")
     
-    # Generate visualizations
+# Generate visualizations
     GenerateVisualizations(dict_ranges_count, core_ranges, unique_ranges, accessory_count, 
-                          total_ranges, num_of_genomes, hvcf_input, figformat)
+                           total_ranges, num_of_genomes, hvcf_input, figformat)
 
 
 def GenerateVisualizations(dict_ranges_count, core_ranges, unique_ranges, accessory_count, 
-                          total_ranges, num_of_genomes, hvcf_input, figformat='png'):
+                           total_ranges, num_of_genomes, hvcf_input, figformat='png')
     """
     Generate bar plot and pie chart visualizations for range analysis.
     
