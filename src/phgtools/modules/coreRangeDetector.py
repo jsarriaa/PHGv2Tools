@@ -296,7 +296,7 @@ def GenerateVisualizations(figformat='png',dict_ranges_count, core_ranges, uniqu
     
     # Save figure
     output_file = hvcf_input.replace('.h.vcf.gz', '').replace('.h.vcf', '') + '_analysis.' + figformat
-    plt.savefig(format=figformat, output_file, dpi=300, bbox_inches='tight')
+    plt.savefig(output_file, format=figformat, dpi=300, bbox_inches='tight')
     print(f"Visualization saved to: {output_file}\n")
     
     # Display plot
