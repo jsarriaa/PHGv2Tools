@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import glob
 import time
 import sys
 import gzip
@@ -102,18 +103,69 @@ def add_colors_to_hapIDs(genotype_group_sort_hash):
 
     return hapID_color_map
 
+def resolve_symlink_target(vcf_folder, symlink_path):
+    if not os.path.islink(symlink_path):
+        return None
+
+    link_target = os.readlink(symlink_path)
+    if os.path.isabs(link_target):
+        if os.path.exists(link_target):
+            return link_target
+        return None
+
+    symlink_dir = os.path.dirname(symlink_path) or vcf_folder
+    candidate = os.path.normpath(os.path.join(symlink_dir, link_target))
+    if os.path.exists(candidate):
+        return candidate
+
+    base_folder = os.path.abspath(vcf_folder)
+    while True:
+        candidate = os.path.normpath(os.path.join(base_folder, link_target))
+        if os.path.exists(candidate):
+            return candidate
+        parent = os.path.dirname(base_folder)
+        if parent == base_folder:
+            break
+        base_folder = parent
+
+    return None
+
+
 def find_hvcf_files(vcf_folder, genotype_group_sort_hash):
     hvcf_files = {}
     for genotype in genotype_group_sort_hash.keys():
         vcf_file_gz = os.path.join(vcf_folder, f"{genotype}.h.vcf.gz")
         vcf_file_plain = os.path.join(vcf_folder, f"{genotype}.h.vcf")
-        
+        resolved = None
+
         if os.path.exists(vcf_file_gz):
-            hvcf_files[genotype] = vcf_file_gz
+            resolved = vcf_file_gz
+        elif os.path.islink(vcf_file_gz):
+            resolved = resolve_symlink_target(vcf_folder, vcf_file_gz)
         elif os.path.exists(vcf_file_plain):
-            hvcf_files[genotype] = vcf_file_plain
-        else:
-            raise FileNotFoundError(f"VCF file not found for genotype: {genotype} in {vcf_folder}")
+            resolved = vcf_file_plain
+        elif os.path.islink(vcf_file_plain):
+            resolved = resolve_symlink_target(vcf_folder, vcf_file_plain)
+
+        if resolved and os.path.exists(resolved):
+            hvcf_files[genotype] = resolved
+            continue
+
+        # Fallback: search recursively for matching genome files under the provided folder
+        search_pattern = os.path.join(vcf_folder, '**', f'{genotype}.h.vcf*')
+        matches = glob.glob(search_pattern, recursive=True)
+        if matches:
+            # Prefer compressed .gz files if available
+            gz_matches = [m for m in matches if m.endswith('.h.vcf.gz')]
+            plain_matches = [m for m in matches if m.endswith('.h.vcf')]
+            if gz_matches:
+                hvcf_files[genotype] = sorted(gz_matches)[0]
+                continue
+            if plain_matches:
+                hvcf_files[genotype] = sorted(plain_matches)[0]
+                continue
+
+        raise FileNotFoundError(f"VCF file not found for genotype: {genotype} in {vcf_folder}")
     
     return hvcf_files
 
@@ -234,7 +286,7 @@ def generate_df(bed_files, hapID_color_map, genotype_group_sort_hash, hvcfs_fold
     
     return df
 
-def plot_haplotype_painting(hvcfs_folder, chr_to_plot, chr_list, hapID_color_map, genotype_group_sort_hash, df, region_start, region_end, plot_pangenomes, verbose=False):
+def plot_haplotype_painting(hvcfs_folder, chr_to_plot, chr_list, hapID_color_map, genotype_group_sort_hash, df, region_start, region_end, plot_pangenomes, figformat='png', verbose=False):
     base_output_dir = os.path.join(hvcfs_folder, "plots")
     os.makedirs(base_output_dir, exist_ok=True)
 
@@ -242,9 +294,9 @@ def plot_haplotype_painting(hvcfs_folder, chr_to_plot, chr_list, hapID_color_map
 
     for chrom in chromosomes_to_process:
         if region_start and region_end:
-            chrom_output_png = os.path.join(base_output_dir, f"{chrom}_{region_start}-{region_end}_haplotype_painting.png")
+            chrom_output = os.path.join(base_output_dir, f"{chrom}_{region_start}-{region_end}_haplotype_painting.{figformat}")
         else:
-            chrom_output_png = os.path.join(base_output_dir, f"{chrom}_FULL_haplotype_painting.png")
+            chrom_output = os.path.join(base_output_dir, f"{chrom}_FULL_haplotype_painting.{figformat}")
 
         start_time_chr = time.time()
         cdf = df[df['chr'] == chrom].copy()
@@ -346,10 +398,10 @@ def plot_haplotype_painting(hvcfs_folder, chr_to_plot, chr_list, hapID_color_map
             except:
                 plt.subplots_adjust(left=0.1, right=0.85, top=0.93, bottom=0.08)
 
-        plt.savefig(chrom_output_png, dpi=300, bbox_inches='tight', pad_inches=0.3)
+        plt.savefig(chrom_output, format=figformat, dpi=300, bbox_inches='tight', pad_inches=0.3)
         plt.close()
         
-        print(f"Plot saved: {chrom_output_png}")
+        print(f"Plot saved: {chrom_output}")
 
 
 #######################################################################################################
@@ -385,6 +437,7 @@ Notes:
     parser.add_argument('--samples-list', required=True, help='Path to grouped samples file (TSV with Sort, Genotype, Group columns)')
     parser.add_argument('-c', '--chromosome', nargs='+', default=None, help='Chromosome(s) to plot (e.g., chr1H chr2H)')
     parser.add_argument('-r', '--region', type=str, default=None, help='Region to plot in format START-END (e.g. 1000-2000)')
+    parser.add_argument('-f', '--format', default='png', choices=['png', 'pdf', 'svg'], help='Output plot format (png, pdf, svg); default: png')
     parser.add_argument('--plot-pangenome-references', action='store_true', default=False, help='Include pangenome samples in plots')
     parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Enable verbose output')
 
@@ -424,7 +477,8 @@ Notes:
         plot_haplotype_painting(
             parsed_args.hvcf_folder, parsed_args.chromosome, chr_list, hapID_color_map, 
             genotype_group_sort_hash, df, region_start, region_end, 
-            parsed_args.plot_pangenome_references, verbose=parsed_args.verbose
+            parsed_args.plot_pangenome_references, figformat=parsed_args.format,
+            verbose=parsed_args.verbose
         )
 
     except Exception as e:
